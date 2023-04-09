@@ -1,0 +1,59 @@
+.CreateCourseContainer {
+    border: solid 1px blue;
+}
+
+.CreateCourseHeader{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 10px 0 0 0 ;
+}
+
+.CreateCourseBody{
+    display: flex;
+    min-height: 350px;
+    flex-direction: row;
+    justify-content: space-around;
+    border: solid 1px black;
+    margin: 10px;
+    padding: 10px;
+}
+
+.addAuthorContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    width: 40%;
+}
+
+.addAuthorInputContainer{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+}
+
+.durationInputContainer{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.authorsContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    width: 40%;
+}
+
+.authorsList{
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 15px;
+}
+

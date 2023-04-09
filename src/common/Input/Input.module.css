@@ -1,0 +1,10 @@
+.input {
+    width: 400px;
+    padding: 5px 15px;
+    margin: 5px 0;
+    border: 1px solid yellow;
+    font-size: 16px;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+}
