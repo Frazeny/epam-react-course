@@ -10,7 +10,6 @@ import { dateConverter } from '../../helpers/dateGeneratop';
 import { v4 as uuidv4 } from 'uuid';
 
 import styles from './CreateCourse.module.css';
-import Textarea from '../../common/Textarea/Textarea';
 
 interface CreateCourseProps {
 	displayCourses: () => void;
@@ -33,10 +32,8 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 	const [duration, setDuration] = useState(0);
 
 	useEffect(() => {
-		setAuthors(
-			fetchedAuthors.filter((author) => !courseAuthors.includes(author))
-		);
-	}, [courseAuthors, fetchedAuthors]);
+		setAuthors(fetchedAuthors);
+	}, [fetchedAuthors]);
 
 	const addAuthorToCourse = (author: IAuthor) => {
 		setCourseAuthors((prevAuthors) => [...prevAuthors, author]);
@@ -64,6 +61,7 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 		};
 
 		addNewAuthor((prevAuthors) => [...prevAuthors, newAuthor]);
+
 		setAuthorName('');
 	};
 
@@ -92,37 +90,30 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 		<form className={styles.CreateCourseContainer}>
 			<div className={styles.CreateCourseHeader}>
 				<Input
-					id={'course-title'}
-					name={'course-title'}
 					type='text'
 					labelText='Title'
 					placeholderText='Enter title...'
-					onChange={(event) => setTitle(event.target.value)}
+					onChange={(e) => setTitle(e)}
 				/>
 				<Button children='Create Course' onClick={(e) => createCourse(e)} />
 			</div>
 			<div className={styles.CreateCourseDescription}>
-				<Textarea
-					id={'course-description'}
-					name={'course-description'}
+				<Input
 					labelText='Description'
 					placeholderText='Enter description'
-					required={true}
-					onChange={(event) => setDescription(event.target.value)}
+					type='textarea'
+					onChange={(e) => setDescription(e)}
 				/>
 			</div>
-			<div className={styles.CreateCourseBody}>
+			<div className={styles.CreateAuthors}>
 				<div className={styles.addAuthorContainer}>
 					<div className={styles.addAuthorInputContainer}>
 						<h3>Add author</h3>
 						<Input
-							id={'new-author'}
-							name={'new-author'}
 							type='text'
 							placeholderText='Enter author name...'
 							labelText='Author name'
-							value={authorName}
-							onChange={(event) => setAuthorName(event.target.value)}
+							onChange={(e) => setAuthorName(e)}
 						/>
 						<Button children='Create author' onClick={(e) => createAuthor(e)} />
 					</div>
@@ -130,30 +121,21 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 					<div className={styles.durationInputContainer}>
 						<h3>Duration</h3>
 						<Input
-							id={'course-duration'}
-							name={'course-duration'}
 							type='number'
 							placeholderText='Enter duration in minutes...'
 							labelText='Duration'
-							onChange={(event) => setDuration(parseInt(event.target.value))}
+							onChange={(e) => setDuration(e)}
 						/>
-						<p className={styles.durationInputContainer__representation}>
-							Duration:
-							<span
-								className={styles.durationInputContainer__representation_bold}
-							>
-								{formattedDuration(duration)}
-							</span>
-						</p>
+						<p>Duration: {formattedDuration(duration)}</p>
 					</div>
 				</div>
 				<div className={styles.authorsContainer}>
 					<h3>Authors</h3>
-					<div className={styles.authorsContainer__list}>
-						<ul className={styles.authorsList}>
+					<div className={styles.authorsList}>
+						<ul>
 							{authors.map((author) => {
 								return (
-									<li className={styles.authorsList__item} key={author.id}>
+									<li key={author.id}>
 										{author.name}
 										<Button
 											children='Add author'
@@ -164,15 +146,12 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 							})}
 						</ul>
 					</div>
-					<div className={styles.authorsContainer__list}>
-						<h3>Course authors</h3>
-						<ul className={styles.authorsList}>
+					<h3>Course authors</h3>
+					<div className={styles.addeAuthorsList}>
+						<ul>
 							{courseAuthors.map((courseAuthor) => {
 								return (
-									<li
-										className={styles.authorsList__item}
-										key={courseAuthor.id}
-									>
+									<li key={courseAuthor.id}>
 										{courseAuthor.name}
 										<Button
 											children='Delete Author'

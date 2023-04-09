@@ -19,7 +19,7 @@ const Courses: React.FC<CourseProps> = ({
 	fetchedCourses,
 	fetchedAuthors,
 }) => {
-	const [courses, setCourses] = useState<ICourse[]>([]);
+	const [courses, setCourses] = useState<ICourse[] | []>([]);
 	const [searchQuery, setSearchQuery] = useState('');
 
 	useEffect(() => {
@@ -29,28 +29,24 @@ const Courses: React.FC<CourseProps> = ({
 	const handleSearch = useCallback(
 		(query: string) => {
 			setSearchQuery(query);
-			if (!searchQuery) {
+			if (!query) {
 				setCourses(fetchedCourses);
 			} else {
 				const filteredCourses = fetchedCourses.filter(
 					(course) =>
-						course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-						course.id.toLowerCase().includes(searchQuery.toLowerCase())
+						course.title.toLowerCase().includes(query.toLowerCase()) ||
+						course.id.toLowerCase().includes(query.toLowerCase())
 				);
 				setCourses(filteredCourses);
 			}
 		},
-		[fetchedCourses, searchQuery]
+		[fetchedCourses]
 	);
 
 	return (
 		<div className={styles.courses}>
 			<div className={styles.courses__header}>
-				<SearchBar
-					inputID={'course-search'}
-					inputName={'course-search'}
-					onSearch={handleSearch}
-				/>
+				<SearchBar onSearch={handleSearch} />
 				<Button children='Add new course' onClick={displayCourses} />
 			</div>
 			{courses.map((course) => (

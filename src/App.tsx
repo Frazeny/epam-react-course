@@ -2,16 +2,18 @@ import React, { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import Header from './components/Header/Header';
 import { mockedAuthorsList, mockedCoursesList, User } from './constants';
-import { IAuthor, ICourse } from './types/types';
+import { IAuthor, ICourse, IUser } from './types/types';
 import Courses from './components/Courses/Courses';
 import CreateCourse from './components/CreateCourse/CreateCourse';
 // import CoursesService from './API/CoursesService';
 // import { useFetching } from './hooks/useFetching';
 
 function App() {
-	const [isCreateCourseRendered, setIsCreateCourseRendered] = useState(false);
+	const [createCourse, setCreateCourse] = useState(false);
 	const [fetchedCourses, setFetchedCourses] = useState<ICourse[]>([]);
 	const [fetchedAuthors, setFetchedAuthors] = useState<IAuthor[]>([]);
+
+	const user: IUser = User;
 
 	// useEffect(() => {
 	// 	fetchCourses();
@@ -36,13 +38,13 @@ function App() {
 	}, []);
 
 	const handleCreateCourseRender = useCallback(() => {
-		setIsCreateCourseRendered(!isCreateCourseRendered);
-	}, [isCreateCourseRendered]);
+		setCreateCourse(!createCourse);
+	}, [createCourse]);
 
 	return (
 		<div className='App'>
-			<Header userName={User.name} />
-			{isCreateCourseRendered ? (
+			<Header userName={user.name} />
+			{createCourse ? (
 				<CreateCourse
 					displayCourses={handleCreateCourseRender}
 					fetchedAuthors={fetchedAuthors}

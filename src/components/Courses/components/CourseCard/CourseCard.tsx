@@ -13,10 +13,9 @@ interface CourseCardProps {
 	authors: IAuthor[];
 }
 
-const MAX_AUTHORS_STRING_LENGTH = 60;
-
 const CourseCard: React.FC<CourseCardProps> = ({ course, authors }) => {
 	const courseAuthorsString = useMemo(() => {
+		const MAX_AUTHORS_STRING_LENGTH = 60;
 		const courseAuthors: string = course.authors
 			.map((authorID) => {
 				const author = authors.find((author) => author.id === authorID);

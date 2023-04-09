@@ -2,18 +2,14 @@ import React from 'react';
 import styles from './Input.module.css';
 
 type InputProps = {
-	id: string;
-	name: string;
 	type: string;
 	labelText?: string;
 	placeholderText: string;
-	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onChange: (value: any) => void;
 	value?: string;
 };
 
 const Input: React.FC<InputProps> = ({
-	id,
-	name,
 	type,
 	labelText,
 	placeholderText,
@@ -22,15 +18,14 @@ const Input: React.FC<InputProps> = ({
 }) => {
 	return (
 		<div>
-			<label className={styles.label}>
+			<label htmlFor='input'>
 				{labelText}
 				<input
 					className={styles.input}
-					id={id}
-					name={name}
+					id='input'
 					type={type}
 					placeholder={placeholderText}
-					onChange={onChange}
+					onChange={(e) => onChange(e.target.value)}
 					{...props}
 				/>
 			</label>
