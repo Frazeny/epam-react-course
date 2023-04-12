@@ -19,7 +19,7 @@ const Courses: React.FC<CourseProps> = ({
 	fetchedCourses,
 	fetchedAuthors,
 }) => {
-	const [courses, setCourses] = useState<ICourse[] | []>([]);
+	const [courses, setCourses] = useState<ICourse[]>([]);
 	const [searchQuery, setSearchQuery] = useState('');
 
 	useEffect(() => {
