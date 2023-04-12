@@ -20,7 +20,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
 			<Input
 				type='text'
 				placeholderText='Enter course name...'
-				onChange={setQuery}
+				onChange={(event) => setQuery(event.target.value)}
 				value={query}
 			/>
 			<Button children='Search' onClick={() => handleSearch(query)} />

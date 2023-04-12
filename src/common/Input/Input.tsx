@@ -5,7 +5,7 @@ type InputProps = {
 	type: string;
 	labelText?: string;
 	placeholderText: string;
-	onChange: (value: any) => void;
+	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	value?: string;
 };
 
@@ -25,7 +25,7 @@ const Input: React.FC<InputProps> = ({
 					id='input'
 					type={type}
 					placeholder={placeholderText}
-					onChange={(e) => onChange(e.target.value)}
+					onChange={onChange}
 					{...props}
 				/>
 			</label>
