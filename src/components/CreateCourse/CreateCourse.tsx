@@ -93,7 +93,7 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 					type='text'
 					labelText='Title'
 					placeholderText='Enter title...'
-					onChange={(e) => setTitle(e)}
+					onChange={(event) => setTitle(event.target.value)}
 				/>
 				<Button children='Create Course' onClick={(e) => createCourse(e)} />
 			</div>
@@ -102,7 +102,7 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 					labelText='Description'
 					placeholderText='Enter description'
 					type='textarea'
-					onChange={(e) => setDescription(e)}
+					onChange={(event) => setDescription(event.target.value)}
 				/>
 			</div>
 			<div className={styles.CreateAuthors}>
@@ -113,7 +113,7 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 							type='text'
 							placeholderText='Enter author name...'
 							labelText='Author name'
-							onChange={(e) => setAuthorName(e)}
+							onChange={(event) => setAuthorName(event.target.value)}
 						/>
 						<Button children='Create author' onClick={(e) => createAuthor(e)} />
 					</div>
@@ -124,7 +124,7 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 							type='number'
 							placeholderText='Enter duration in minutes...'
 							labelText='Duration'
-							onChange={(e) => setDuration(e)}
+							onChange={(event) => setDuration(parseInt(event.target.value))}
 						/>
 						<p>Duration: {formattedDuration(duration)}</p>
 					</div>
