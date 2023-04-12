@@ -13,7 +13,6 @@ function App() {
 	const [fetchedCourses, setFetchedCourses] = useState<ICourse[]>([]);
 	const [fetchedAuthors, setFetchedAuthors] = useState<IAuthor[]>([]);
 
-	const user: IUser = User;
 
 	// useEffect(() => {
 	// 	fetchCourses();
@@ -43,7 +42,7 @@ function App() {
 
 	return (
 		<div className='App'>
-			<Header userName={user.name} />
+			<Header userName={User.name} />
 			{createCourse ? (
 				<CreateCourse
 					displayCourses={handleCreateCourseRender}
