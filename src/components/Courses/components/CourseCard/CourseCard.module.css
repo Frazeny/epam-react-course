@@ -12,7 +12,7 @@
 
 .courseCard__info {
     display: block;
-    flex-basis: 70%;
+    flex: 3 1 65%;
 }
 
 .courseCard__info>p {
@@ -22,4 +22,5 @@
 .courseCard__description {
     justify-content: center;
     align-items: center;
+    flex: 1 1 30%;
 }

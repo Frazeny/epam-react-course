@@ -1,20 +1,34 @@
 .CreateCourseContainer {
     border: solid 1px blue;
+    padding: 10px;
 }
 
 .CreateCourseHeader{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-end;
-    padding: 10px 0 0 0 ;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.CreateCourseDescription {
+    width: 100%;
+    /*height: 80px;*/
+}
+
+.CreateAuthors {
+    padding: 10px;
+    border: 1px solid black;
+    display: flex;
+    flex-flow: column wrap;
+    flex: auto;
 }
 
 .CreateCourseBody{
     display: flex;
     min-height: 350px;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
     border: solid 1px black;
     margin: 10px;
     padding: 10px;
@@ -22,6 +36,7 @@
 
 .addAuthorContainer{
     display: flex;
+    flex: 1 1 auto;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
@@ -40,20 +55,45 @@
     width: 100%;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
+}
+
+.durationInputContainer__representation {
+    font-size: large;
+}
+
+.durationInputContainer__representation_bold {
+    font-size: x-large;
+    font-weight: bolder;
 }
 
 
 .authorsContainer{
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-    width: 40%;
+    flex: 1 1 auto;
+}
+
+.authorsContainer__list {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .authorsList{
+    list-style-type: none;
+    padding: 0;
     display: flex;
-    flex-direction: column;
+    flex-flow: column wrap;
+    flex: 1;
+    justify-content: space-between;
     margin: 0 0 15px;
+}
+
+.authorsList__item {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    align-items: center;
 }
 
