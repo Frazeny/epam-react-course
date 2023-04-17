@@ -2,6 +2,8 @@ import React from 'react';
 import styles from './Input.module.css';
 
 type InputProps = {
+	id: string;
+	name: string;
 	type: string;
 	labelText?: string;
 	placeholderText: string;
@@ -10,6 +12,8 @@ type InputProps = {
 };
 
 const Input: React.FC<InputProps> = ({
+	id,
+	name,
 	type,
 	labelText,
 	placeholderText,
@@ -18,11 +22,12 @@ const Input: React.FC<InputProps> = ({
 }) => {
 	return (
 		<div>
-			<label htmlFor='input'>
+			<label className={styles.label}>
 				{labelText}
 				<input
 					className={styles.input}
-					id='input'
+					id={id}
+					name={name}
 					type={type}
 					placeholder={placeholderText}
 					onChange={onChange}
