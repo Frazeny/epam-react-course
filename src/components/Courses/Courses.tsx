@@ -29,13 +29,13 @@ const Courses: React.FC<CourseProps> = ({
 	const handleSearch = useCallback(
 		(query: string) => {
 			setSearchQuery(query);
-			if (!query) {
+			if (!searchQuery) {
 				setCourses(fetchedCourses);
 			} else {
 				const filteredCourses = fetchedCourses.filter(
 					(course) =>
-						course.title.toLowerCase().includes(query.toLowerCase()) ||
-						course.id.toLowerCase().includes(query.toLowerCase())
+						course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+						course.id.toLowerCase().includes(searchQuery.toLowerCase())
 				);
 				setCourses(filteredCourses);
 			}
@@ -46,7 +46,11 @@ const Courses: React.FC<CourseProps> = ({
 	return (
 		<div className={styles.courses}>
 			<div className={styles.courses__header}>
-				<SearchBar onSearch={handleSearch} />
+				<SearchBar
+					inputID={'course-search'}
+					inputName={'course-search'}
+					onSearch={handleSearch}
+				/>
 				<Button children='Add new course' onClick={displayCourses} />
 			</div>
 			{courses.map((course) => (
