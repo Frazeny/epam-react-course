@@ -10,6 +10,7 @@ import { dateConverter } from '../../helpers/dateGeneratop';
 import { v4 as uuidv4 } from 'uuid';
 
 import styles from './CreateCourse.module.css';
+import Textarea from '../../common/Textarea/Textarea';
 
 interface CreateCourseProps {
 	displayCourses: () => void;
@@ -61,7 +62,6 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 		};
 
 		addNewAuthor((prevAuthors) => [...prevAuthors, newAuthor]);
-
 		setAuthorName('');
 	};
 
@@ -90,6 +90,8 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 		<form className={styles.CreateCourseContainer}>
 			<div className={styles.CreateCourseHeader}>
 				<Input
+					id={'course-title'}
+					name={'course-title'}
 					type='text'
 					labelText='Title'
 					placeholderText='Enter title...'
@@ -98,18 +100,22 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 				<Button children='Create Course' onClick={(e) => createCourse(e)} />
 			</div>
 			<div className={styles.CreateCourseDescription}>
-				<Input
+				<Textarea
+					id={'course-description'}
+					name={'course-description'}
 					labelText='Description'
 					placeholderText='Enter description'
-					type='textarea'
+					required={true}
 					onChange={(event) => setDescription(event.target.value)}
 				/>
 			</div>
-			<div className={styles.CreateAuthors}>
+			<div className={styles.CreateCourseBody}>
 				<div className={styles.addAuthorContainer}>
 					<div className={styles.addAuthorInputContainer}>
 						<h3>Add author</h3>
 						<Input
+							id={'new-author'}
+							name={'new-author'}
 							type='text'
 							placeholderText='Enter author name...'
 							labelText='Author name'
@@ -121,21 +127,30 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 					<div className={styles.durationInputContainer}>
 						<h3>Duration</h3>
 						<Input
+							id={'course-duration'}
+							name={'course-duration'}
 							type='number'
 							placeholderText='Enter duration in minutes...'
 							labelText='Duration'
 							onChange={(event) => setDuration(parseInt(event.target.value))}
 						/>
-						<p>Duration: {formattedDuration(duration)}</p>
+						<p className={styles.durationInputContainer__representation}>
+							Duration:
+							<span
+								className={styles.durationInputContainer__representation_bold}
+							>
+								{formattedDuration(duration)}
+							</span>
+						</p>
 					</div>
 				</div>
 				<div className={styles.authorsContainer}>
 					<h3>Authors</h3>
-					<div className={styles.authorsList}>
-						<ul>
+					<div className={styles.authorsContainer__list}>
+						<ul className={styles.authorsList}>
 							{authors.map((author) => {
 								return (
-									<li key={author.id}>
+									<li className={styles.authorsList__item} key={author.id}>
 										{author.name}
 										<Button
 											children='Add author'
@@ -146,12 +161,15 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 							})}
 						</ul>
 					</div>
-					<h3>Course authors</h3>
-					<div className={styles.addeAuthorsList}>
-						<ul>
+					<div className={styles.authorsContainer__list}>
+						<h3>Course authors</h3>
+						<ul className={styles.authorsList}>
 							{courseAuthors.map((courseAuthor) => {
 								return (
-									<li key={courseAuthor.id}>
+									<li
+										className={styles.authorsList__item}
+										key={courseAuthor.id}
+									>
 										{courseAuthor.name}
 										<Button
 											children='Delete Author'

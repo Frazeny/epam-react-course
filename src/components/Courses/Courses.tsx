@@ -40,7 +40,7 @@ const Courses: React.FC<CourseProps> = ({
 				setCourses(filteredCourses);
 			}
 		},
-		[fetchedCourses]
+		[fetchedCourses, searchQuery]
 	);
 
 	return (
