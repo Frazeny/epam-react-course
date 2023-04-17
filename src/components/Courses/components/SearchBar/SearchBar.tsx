@@ -6,9 +6,11 @@ import styles from './SearchBar.module.css';
 
 type SearchBarProps = {
 	onSearch: (query: string) => void;
+	inputID: string;
+	inputName: string;
 };
 
-const SearchBar = ({ onSearch }: SearchBarProps) => {
+const SearchBar = ({ onSearch, inputID, inputName }: SearchBarProps) => {
 	const [query, setQuery] = useState('');
 	const handleSearch = (query: string) => {
 		onSearch(query);
@@ -18,6 +20,8 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
 	return (
 		<div className={styles.searchBar}>
 			<Input
+				id={inputID}
+				name={inputName}
 				type='text'
 				placeholderText='Enter course name...'
 				onChange={(event) => setQuery(event.target.value)}
