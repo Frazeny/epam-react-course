@@ -33,8 +33,10 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 	const [duration, setDuration] = useState(0);
 
 	useEffect(() => {
-		setAuthors(fetchedAuthors);
-	}, [fetchedAuthors]);
+		setAuthors(
+			fetchedAuthors.filter((author) => !courseAuthors.includes(author))
+		);
+	}, [courseAuthors, fetchedAuthors]);
 
 	const addAuthorToCourse = (author: IAuthor) => {
 		setCourseAuthors((prevAuthors) => [...prevAuthors, author]);
@@ -119,6 +121,7 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 							type='text'
 							placeholderText='Enter author name...'
 							labelText='Author name'
+							value={authorName}
 							onChange={(event) => setAuthorName(event.target.value)}
 						/>
 						<Button children='Create author' onClick={(e) => createAuthor(e)} />
