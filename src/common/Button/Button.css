@@ -1,0 +1,12 @@
+button {
+    background: none;
+    border: 1px solid #B880E5;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+    line-height: normal;
+    overflow: visible;
+    padding: 5px 10px;
+    text-align: center;
+    width: 150px;
+}

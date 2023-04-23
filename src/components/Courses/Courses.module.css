@@ -1,0 +1,11 @@
+.courses {
+    border: 1px solid dodgerblue;
+}
+
+.courses__header {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 5%;
+}

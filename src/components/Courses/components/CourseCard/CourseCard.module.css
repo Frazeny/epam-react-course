@@ -1,0 +1,26 @@
+.courseCard {
+    display: flex;
+    flex: 1 1;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+    column-gap: 5%;
+    margin: 0;
+    padding: 5px 10px;
+    border: 1px solid limegreen;
+}
+
+.courseCard__info {
+    display: block;
+    flex: 3 1 65%;
+}
+
+.courseCard__info>p {
+    text-align: start;
+}
+
+.courseCard__description {
+    justify-content: center;
+    align-items: center;
+    flex: 1 1 30%;
+}
