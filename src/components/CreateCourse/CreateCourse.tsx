@@ -11,32 +11,44 @@ import { v4 as uuidv4 } from 'uuid';
 
 import styles from './CreateCourse.module.css';
 import Textarea from '../../common/Textarea/Textarea';
+import { useFetching } from '../../hooks/useFetching';
+import CoursesService from '../../API/CoursesService';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../router/routes';
+import Loader from '../UI/Loader';
+import { LOCAL_STORAGE } from '../../constants';
 
-interface CreateCourseProps {
-	displayCourses: () => void;
-	fetchedAuthors: IAuthor[];
-	addNewAuthor: React.Dispatch<React.SetStateAction<IAuthor[]>>;
-	addNewCourse: React.Dispatch<React.SetStateAction<ICourse[]>>;
-}
-
-const CreateCourse: React.FC<CreateCourseProps> = ({
-	displayCourses,
-	fetchedAuthors,
-	addNewCourse,
-	addNewAuthor,
-}) => {
+const CreateCourse: React.FC = () => {
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
-	const [authors, setAuthors] = useState<IAuthor[]>(fetchedAuthors);
+	const [authors, setAuthors] = useState<IAuthor[]>([]);
 	const [courseAuthors, setCourseAuthors] = useState<IAuthor[]>([]);
 	const [authorName, setAuthorName] = useState('');
 	const [duration, setDuration] = useState(0);
+	const navigate = useNavigate();
+	const [fetchAuthors, isAuthorsLoading, fetchAuthorsError] = useFetching(
+		async () => {
+			const authors = await CoursesService.getAllAuthors();
+			console.log('authors');
+			console.log(authors.data.result);
+			setAuthors(authors.data.result);
+		}
+	);
+	const [fetchAddCourse, isAddCourseLoading, fetchAddCourseError] = useFetching(
+		async (newCourse) => {
+			await CoursesService.postAddCourse(
+				newCourse,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				localStorage.getItem(LOCAL_STORAGE.TOKEN)
+			);
+			navigate(ROUTES.COURSES);
+		}
+	);
 
 	useEffect(() => {
-		setAuthors(
-			fetchedAuthors.filter((author) => !courseAuthors.includes(author))
-		);
-	}, [courseAuthors, fetchedAuthors]);
+		fetchAuthors();
+	}, []);
 
 	const addAuthorToCourse = (author: IAuthor) => {
 		setCourseAuthors((prevAuthors) => [...prevAuthors, author]);
@@ -63,7 +75,7 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 			name: authorName,
 		};
 
-		addNewAuthor((prevAuthors) => [...prevAuthors, newAuthor]);
+		setAuthors((prevAuthors) => [...prevAuthors, newAuthor]);
 		setAuthorName('');
 	};
 
@@ -82,14 +94,14 @@ const CreateCourse: React.FC<CreateCourseProps> = ({
 			duration,
 			authors: courseAuthors.map((a) => a.id),
 		};
-
-		addNewCourse((prevCourses) => [...prevCourses, newCourse]);
-
-		displayCourses();
+		fetchAddCourse(newCourse);
 	};
 
 	return (
 		<form className={styles.CreateCourseContainer}>
+			{(isAddCourseLoading || isAuthorsLoading) && <Loader />}
+			{fetchAddCourseError && <p>{fetchAddCourseError}</p>}
+			{fetchAuthorsError && <p>{fetchAuthorsError}</p>}
 			<div className={styles.CreateCourseHeader}>
 				<Input
 					id={'course-title'}

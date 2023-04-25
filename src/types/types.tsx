@@ -1,5 +1,11 @@
 export interface IUser {
+	email: string;
 	name: string;
+}
+
+export interface ILoginForm {
+	email: string;
+	password: string;
 }
 
 export interface IAuthor {
