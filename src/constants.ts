@@ -48,4 +48,9 @@ const User = {
 
 const HEADER_BUTTON_TEXT = 'Logout';
 
+export const LOCAL_STORAGE = {
+	USER: 'user',
+	TOKEN: 'token',
+};
+
 export { User, HEADER_BUTTON_TEXT, mockedAuthorsList, mockedCoursesList };

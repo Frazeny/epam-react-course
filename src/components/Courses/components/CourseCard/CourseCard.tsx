@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { ICourse, IAuthor } from '../../../../types/types';
 import { formattedDuration } from '../../../../helpers/pipeDuration';
@@ -7,6 +7,9 @@ import Button from '../../../../common/Button/Button';
 import CardDescription from './components/CardDescription/CardDescription';
 
 import styles from './CourseCard.module.css';
+import { dateConverter } from '../../../../helpers/dateGeneratop';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../../../router/routes';
 
 interface CourseCardProps {
 	course: ICourse;
@@ -16,6 +19,7 @@ interface CourseCardProps {
 const MAX_AUTHORS_STRING_LENGTH = 60;
 
 const CourseCard: React.FC<CourseCardProps> = ({ course, authors }) => {
+	const navigate = useNavigate();
 	const courseAuthorsString = useMemo(() => {
 		const courseAuthors: string = course.authors
 			.map((authorID) => {
@@ -27,6 +31,10 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, authors }) => {
 			? courseAuthors
 			: courseAuthors.slice(0, MAX_AUTHORS_STRING_LENGTH) + '...';
 	}, [authors, course.authors]);
+
+	const handleCourseInfo = useCallback(() => {
+		navigate(`${ROUTES.COURSES}/${course.id}`);
+	}, [course]);
 
 	return (
 		<div className={styles.courseCard}>
@@ -46,10 +54,13 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, authors }) => {
 					/>
 				</div>
 				<div>
-					<CardDescription title='Created' data={course.creationDate} />
+					<CardDescription
+						title='Created'
+						data={dateConverter(new Date(course.creationDate))}
+					/>
 				</div>
 				<div>
-					<Button children='Show course' />
+					<Button children='Show course' onClick={handleCourseInfo} />
 				</div>
 			</div>
 		</div>
