@@ -7,11 +7,14 @@ import { ROUTES } from '../../router/routes';
 import styles from './Login.module.css';
 import Button from '../../common/Button/Button';
 import { AuthContext } from '../../AuthContext/AuthCountext';
+import { ILoginForm } from '../../types/types';
+import Loader from '../UI/Loader';
 
 const Login = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
+	const [isLoadingUser, setIsLoadingUser] = useState<boolean>(false);
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	const { setIsAuth } = useContext(AuthContext);
@@ -21,7 +24,8 @@ const Login = () => {
 	const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		try {
-			const User = { email, password };
+			setIsLoadingUser(true);
+			const User: ILoginForm = { email, password };
 			const response = await CoursesService.postLoginUser(User);
 			const token = response.data.result;
 			localStorage.setItem(LOCAL_STORAGE.TOKEN, token);
@@ -31,9 +35,12 @@ const Login = () => {
 			navigate(ROUTES.COURSES);
 		} catch (error) {
 			if (error instanceof Error) {
-				console.log(error);
 				setError(error.message);
+			} else {
+				setError(`Unexpected error ${error}`);
 			}
+		} finally {
+			setIsLoadingUser(false);
 		}
 	};
 
@@ -42,6 +49,7 @@ const Login = () => {
 			<form className={styles.form} onSubmit={handleLogin}>
 				<h1>Login</h1>
 				{error && <p>{error}</p>}
+				{isLoadingUser && <Loader />}
 				<Input
 					id='email'
 					name='email'

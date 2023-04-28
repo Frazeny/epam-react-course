@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ICourse } from '../../types/types';
+import { IAuthor, ICourse } from '../../types/types';
 import CoursesService from '../../API/CoursesService';
-import { useFetching } from '../../hooks/useFetching';
 import styles from './CourseInfo.module.css';
 import CardDescription from '../Courses/components/CourseCard/components/CardDescription/CardDescription';
 import { formattedDuration } from '../../helpers/pipeDuration';
@@ -15,30 +14,59 @@ const CourseInfo = () => {
 	const { courseId } = useParams<{ courseId: string }>();
 	const navigate = useNavigate();
 	const [course, setCourse] = useState<ICourse>();
-	const [fetchCourse, isCourseLoading, fetchCourseError] = useFetching(
-		async (id) => {
-			const courseInfo = await CoursesService.getCourseInfo(id);
-			setCourse(courseInfo.data.result);
-		}
-	);
-	const [fetchAuthorName, isAuthorNameLoading, fetchAuthorNameError] =
-		useFetching(async (authorId) => {
-			const author = await CoursesService.getAuthorByID(authorId);
-			return author.data.result.name;
-		});
-	useEffect(() => {
-		fetchCourse(courseId);
-	}, [courseId]);
+	const [isCourseLoading, setIsCourseLoading] = useState<boolean>(false);
+	const [fetchCourseError, setFetchCourseError] = useState<string>('');
+	const [courseAuthors, setCourseAuthors] = useState<IAuthor[]>([]);
+	const [isAuthorLoading, setIsAuthorLoading] = useState<boolean>(false);
+	const [getAuthorError, setGetAuthorError] = useState<string>('');
 
-	const courseAuthors = useMemo(() => {
-		const authors = course?.authors.map((authorId) => {
-			const name = fetchAuthorName(authorId);
-			console.log(name);
-			return name;
-		});
-		console.log(authors);
-		return authors;
-	}, [courseId, course?.authors]);
+	useEffect(() => {
+		const fetchAuthors = async () => {
+			try {
+				setIsAuthorLoading(true);
+				if (course) {
+					const courseAuthors = await Promise.all(
+						course.authors.map(async (authorId: string) => {
+							const response = await CoursesService.getAuthorByID(authorId);
+							return response.data.result;
+						})
+					);
+					setCourseAuthors(courseAuthors);
+				} else {
+					setCourseAuthors([]);
+				}
+			} catch (error) {
+				if (error instanceof Error) {
+					setGetAuthorError(error.message);
+				} else {
+					setGetAuthorError(`Unexpected error ${error}`);
+				}
+			} finally {
+				setIsAuthorLoading(false);
+			}
+		};
+		fetchAuthors();
+	}, [course]);
+
+	const fetchCourse = useCallback(async (courseId: string) => {
+		try {
+			setIsCourseLoading(true);
+			const response = await CoursesService.getCourseInfo(courseId);
+			setCourse(response.data.result);
+		} catch (error) {
+			if (error instanceof Error) {
+				setFetchCourseError(error.message);
+			} else {
+				setFetchCourseError(`Unexpected error ${error}`);
+			}
+		} finally {
+			setIsCourseLoading(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		fetchCourse(courseId as string);
+	}, [courseId]);
 
 	const handleToCourses = useCallback(() => {
 		navigate(ROUTES.COURSES);
@@ -69,14 +97,18 @@ const CourseInfo = () => {
 								title='Created'
 								data={dateConverter(new Date(course.creationDate))}
 							/>
-							{isAuthorNameLoading ? (
+							{isAuthorLoading ? (
 								<Loader />
-							) : fetchAuthorNameError ? (
-								<p>fetchAuthorNameError</p>
+							) : getAuthorError ? (
+								<p>getAuthorError</p>
 							) : courseAuthors ? (
 								<CardDescription
 									title='Authors'
-									data={courseAuthors.join(', ')}
+									data={courseAuthors
+										.map((author) => {
+											return author.name;
+										})
+										.join(', ')}
 								/>
 							) : null}
 						</div>

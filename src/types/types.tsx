@@ -8,10 +8,10 @@ export interface ILoginForm {
 	password: string;
 }
 
-export interface IAuthor {
+export type IAuthor = {
 	id: string;
 	name: string;
-}
+};
 
 export interface ICourse {
 	id: string;

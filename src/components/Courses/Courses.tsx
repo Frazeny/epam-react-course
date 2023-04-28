@@ -7,7 +7,7 @@ import SearchBar from './components/SearchBar/SearchBar';
 import styles from './Courses.module.css';
 
 import { IAuthor, ICourse } from '../../types/types';
-import { useFetching } from '../../hooks/useFetching';
+import { useFetching, useFetching2 } from '../../hooks/useFetching';
 import CoursesService from '../../API/CoursesService';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../router/routes';
@@ -18,27 +18,46 @@ const Courses: React.FC = () => {
 	const [authors, setAuthors] = useState<IAuthor[]>([]);
 	const [searchQuery, setSearchQuery] = useState('');
 	const navigate = useNavigate();
+	const [isCoursesLoading, setIsCourseLoading] = useState<boolean>(false);
+	const [getCoursesError, setGetCoursesError] = useState<string>('');
+	const [isAuthorsLoading, setIsAuthorsLoading] = useState<boolean>(false);
+	const [getAuthorsError, setGetAuthorsError] = useState<string>('');
 
-	const [fetchCourses, isCoursesLoading, fetchCoursesError] = useFetching(
-		async () => {
-			const courses = await CoursesService.getAllCourses();
-			console.log('courses');
-			console.log(courses.data.result);
-			setCourses(courses.data.result);
+	const getCourses = useCallback(async () => {
+		try {
+			setIsCourseLoading(true);
+			const response = await CoursesService.getAllCourses();
+			setCourses(response);
+		} catch (error) {
+			if (error instanceof Error) {
+				setGetCoursesError(error.message);
+			} else {
+				setGetCoursesError(`Unexpected error ${error}`);
+			}
+		} finally {
+			setIsCourseLoading(false);
 		}
-	);
-	const [fetchAuthors, isAuthorsLoading, fetchAuthorsError] = useFetching(
-		async () => {
-			const authors = await CoursesService.getAllAuthors();
-			console.log('authors');
-			console.log(authors.data.result);
-			setAuthors(authors.data.result);
+	}, []);
+
+	const getAuthors = useCallback(async () => {
+		try {
+			setIsAuthorsLoading(true);
+			const response = await CoursesService.getAllAuthors();
+			setAuthors(response.data.result);
+		} catch (error) {
+			if (error instanceof Error) {
+				setGetAuthorsError(error.message);
+			} else {
+				setGetAuthorsError(`Unexpected error ${error}`);
+			}
+		} finally {
+			setIsAuthorsLoading(false);
 		}
-	);
+	}, []);
 
 	useEffect(() => {
-		fetchCourses();
-		fetchAuthors();
+		getCourses();
+		getAuthors();
 	}, []);
 
 	const searchedCourses = useMemo(() => {
@@ -70,8 +89,8 @@ const Courses: React.FC = () => {
 				/>
 				<Button children='Add new course' onClick={handleCreateCourse} />
 			</div>
-			{fetchAuthorsError && <p>fetchAuthorsError</p>}
-			{fetchCoursesError && <p>fetchCoursesError</p>}
+			{getAuthorsError && <p>getAuthorsError</p>}
+			{getCoursesError && <p>getCoursesError</p>}
 			{isCoursesLoading || isAuthorsLoading ? (
 				<Loader />
 			) : (
