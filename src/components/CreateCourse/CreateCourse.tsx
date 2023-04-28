@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import Button from '../../common/Button/Button';
 import Input from '../../common/Input/Input';
@@ -11,12 +11,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 import styles from './CreateCourse.module.css';
 import Textarea from '../../common/Textarea/Textarea';
-import { useFetching } from '../../hooks/useFetching';
 import CoursesService from '../../API/CoursesService';
 import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../../router/routes';
 import Loader from '../UI/Loader';
-import { LOCAL_STORAGE } from '../../constants';
+import { ROUTES } from '../../router/routes';
 
 const CreateCourse: React.FC = () => {
 	const [title, setTitle] = useState('');
@@ -26,28 +24,64 @@ const CreateCourse: React.FC = () => {
 	const [authorName, setAuthorName] = useState('');
 	const [duration, setDuration] = useState(0);
 	const navigate = useNavigate();
-	const [fetchAuthors, isAuthorsLoading, fetchAuthorsError] = useFetching(
-		async () => {
-			const authors = await CoursesService.getAllAuthors();
-			console.log('authors');
-			console.log(authors.data.result);
-			setAuthors(authors.data.result);
+	const [isAuthorsLoading, setIsAuthorsLoading] = useState<boolean>(false);
+	const [getAuthorsError, setGetAuthorsError] = useState<string>('');
+	const [isAddCourseLoading, setIsAddCourseLoading] = useState<boolean>(false);
+	const [postAddCourseError, setPostAddCourseError] = useState<string>('');
+
+	const getAuthors = useCallback(async () => {
+		try {
+			setIsAuthorsLoading(true);
+			const response = await CoursesService.getAllAuthors();
+			setAuthors(response.data.result);
+		} catch (error) {
+			if (error instanceof Error) {
+				setGetAuthorsError(error.message);
+			} else {
+				setGetAuthorsError(`Unexpected error ${error}`);
+			}
+		} finally {
+			setIsAuthorsLoading(false);
 		}
-	);
-	const [fetchAddCourse, isAddCourseLoading, fetchAddCourseError] = useFetching(
-		async (newCourse) => {
-			await CoursesService.postAddCourse(
-				newCourse,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				localStorage.getItem(LOCAL_STORAGE.TOKEN)
-			);
-			navigate(ROUTES.COURSES);
+	}, []);
+
+	const handlePostNewCourse = useCallback(async (newCourse: ICourse) => {
+		try {
+			setIsAddCourseLoading(true);
+			const response = await CoursesService.postAddCourse(newCourse);
+		} catch (error) {
+			if (error instanceof Error) {
+				setPostAddCourseError(error.message);
+			} else {
+				setPostAddCourseError(`Unexpected error ${error}`);
+			}
+		} finally {
+			setIsAddCourseLoading(false);
 		}
-	);
+	}, []);
+
+	// const [fetchAuthors, isAuthorsLoading, fetchAuthorsError] = useFetching(
+	// 	async () => {
+	// 		const authors = await CoursesService.getAllAuthors();
+	// 		console.log('authors');
+	// 		console.log(authors.data.result);
+	// 		setAuthors(authors.data.result);
+	// 	}
+	// );
+	// const [fetchAddCourse, isAddCourseLoading, fetchAddCourseError] = useFetching(
+	// 	async (newCourse) => {
+	// 		await CoursesService.postAddCourse(
+	// 			newCourse,
+	// 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// 			// @ts-ignore
+	// 			localStorage.getItem(LOCAL_STORAGE.TOKEN)
+	// 		);
+	// 		navigate(ROUTES.COURSES);
+	// 	}
+	// );
 
 	useEffect(() => {
-		fetchAuthors();
+		getAuthors();
 	}, []);
 
 	const addAuthorToCourse = (author: IAuthor) => {
@@ -94,14 +128,18 @@ const CreateCourse: React.FC = () => {
 			duration,
 			authors: courseAuthors.map((a) => a.id),
 		};
-		fetchAddCourse(newCourse);
+
+		handlePostNewCourse(newCourse);
+		if (!postAddCourseError) {
+			navigate(ROUTES.COURSES);
+		}
 	};
 
 	return (
 		<form className={styles.CreateCourseContainer}>
 			{(isAddCourseLoading || isAuthorsLoading) && <Loader />}
-			{fetchAddCourseError && <p>{fetchAddCourseError}</p>}
-			{fetchAuthorsError && <p>{fetchAuthorsError}</p>}
+			{getAuthorsError && <p>{getAuthorsError}</p>}
+			{postAddCourseError && <p>{postAddCourseError}</p>}
 			<div className={styles.CreateCourseHeader}>
 				<Input
 					id={'course-title'}

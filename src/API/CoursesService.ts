@@ -118,7 +118,8 @@ export default class CoursesService {
 		return response;
 	}
 
-	static async postAddCourse(course: ICourse, accessToken: string) {
+	static async postAddCourse(course: ICourse) {
+		const accessToken = getAccessToken();
 		const response = await axios.post<PostResponseProps<string>>(
 			`${SERVER_URL}/courses/add`,
 			course,

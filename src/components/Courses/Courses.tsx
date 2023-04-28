@@ -7,7 +7,6 @@ import SearchBar from './components/SearchBar/SearchBar';
 import styles from './Courses.module.css';
 
 import { IAuthor, ICourse } from '../../types/types';
-import { useFetching, useFetching2 } from '../../hooks/useFetching';
 import CoursesService from '../../API/CoursesService';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../router/routes';
@@ -58,7 +57,7 @@ const Courses: React.FC = () => {
 	useEffect(() => {
 		getCourses();
 		getAuthors();
-	}, []);
+	}, [getCourses, getAuthors]);
 
 	const searchedCourses = useMemo(() => {
 		if (searchQuery) {
