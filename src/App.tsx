@@ -13,7 +13,7 @@ function App() {
 		if (localStorage.getItem(LOCAL_STORAGE.TOKEN)) {
 			setIsAuth(true);
 		}
-	}, [localStorage]);
+	}, []);
 	return (
 		<div className='App'>
 			<AuthContext.Provider
