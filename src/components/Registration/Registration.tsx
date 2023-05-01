@@ -30,6 +30,8 @@ const Registration = () => {
 				} else {
 					setRegistrationError(`Unexpected error ${error}`);
 				}
+			} finally {
+				setIsRegistrationLoading(false);
 			}
 		},
 		[]

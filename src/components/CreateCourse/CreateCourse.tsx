@@ -48,6 +48,7 @@ const CreateCourse: React.FC = () => {
 	const handlePostNewCourse = useCallback(async (newCourse: ICourse) => {
 		try {
 			setIsAddCourseLoading(true);
+			setPostAddCourseError('');
 			const response = await CoursesService.postAddCourse(newCourse);
 		} catch (error) {
 			if (error instanceof Error) {
@@ -57,28 +58,11 @@ const CreateCourse: React.FC = () => {
 			}
 		} finally {
 			setIsAddCourseLoading(false);
+			if (postAddCourseError) {
+				navigate(ROUTES.COURSES);
+			}
 		}
 	}, []);
-
-	// const [fetchAuthors, isAuthorsLoading, fetchAuthorsError] = useFetching(
-	// 	async () => {
-	// 		const authors = await CoursesService.getAllAuthors();
-	// 		console.log('authors');
-	// 		console.log(authors.data.result);
-	// 		setAuthors(authors.data.result);
-	// 	}
-	// );
-	// const [fetchAddCourse, isAddCourseLoading, fetchAddCourseError] = useFetching(
-	// 	async (newCourse) => {
-	// 		await CoursesService.postAddCourse(
-	// 			newCourse,
-	// 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// 			// @ts-ignore
-	// 			localStorage.getItem(LOCAL_STORAGE.TOKEN)
-	// 		);
-	// 		navigate(ROUTES.COURSES);
-	// 	}
-	// );
 
 	useEffect(() => {
 		getAuthors();
@@ -130,9 +114,6 @@ const CreateCourse: React.FC = () => {
 		};
 
 		handlePostNewCourse(newCourse);
-		if (!postAddCourseError) {
-			navigate(ROUTES.COURSES);
-		}
 	};
 
 	return (

@@ -18,6 +18,8 @@ const Login = () => {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	const { setIsAuth } = useContext(AuthContext);
+	const testToken =
+		'Bearer x6Y50NZ/jHRPcUPRd8hZOeNUBe25yRubBnt+Vza0i0rTICReaAz2lBlgFZhwChr1bytixcYxum9GjlBP3V2N+Wg8Y+SM4kIAsEnkoMoffBjYt2fQH3ODE1dGxXr/24CNADP8wAzQW2IN0mqL73GBZM9RvuNrKWKuX54k19LEk3mTactYtzJzp17uCrwssZy30l3rCzJIDCv7+eia6x7MW6JGhqPzDV59igLDKf2IfvuIz805peForWXwPWVxzD486e2f0dEQf9ZnFwIXH20Nfa9oPCTzRmAqFR+GT0bWl3hbaRmdKZB8UJhr7fQMDKi8pcjliD7so1cJsj98ZxXmBg==';
 
 	const navigate = useNavigate();
 

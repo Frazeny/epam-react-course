@@ -125,7 +125,7 @@ export default class CoursesService {
 			course,
 			{
 				headers: {
-					Authorization: `${accessToken}`,
+					Authorization: accessToken,
 				},
 			}
 		);
