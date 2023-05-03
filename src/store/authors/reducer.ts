@@ -29,7 +29,7 @@ export const useReducer = (
 				authors: [
 					...state.authors,
 					...action.payload.filter((author) => {
-						return !state.authors.some(
+						return !state.authors.find(
 							(existingAuthor) => existingAuthor.id === author.id
 						);
 					}),

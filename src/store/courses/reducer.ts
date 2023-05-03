@@ -25,7 +25,7 @@ export const useReducer = (
 				courses: [
 					...state.courses,
 					...action.payload.filter((course) => {
-						return !state.courses.some(
+						return !state.courses.find(
 							(existingCourse) => existingCourse.id === course.id
 						);
 					}),
