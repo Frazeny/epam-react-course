@@ -23,7 +23,7 @@ const Login = () => {
 
 			const User: ILoginForm = { email, password };
 
-			fetchUser(User);
+			await fetchUser(User);
 			if (!userError && !isLoading) {
 				navigate(ROUTES.COURSES);
 			}
