@@ -10,6 +10,7 @@ import styles from './CourseCard.module.css';
 import { dateConverter } from '../../../../helpers/dateGeneratop';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../../router/routes';
+import { useActions } from '../../../../hooks/useActions';
 
 interface CourseCardProps {
 	course: ICourse;
@@ -20,6 +21,8 @@ const MAX_AUTHORS_STRING_LENGTH = 60;
 
 const CourseCard: React.FC<CourseCardProps> = ({ course, authors }) => {
 	const navigate = useNavigate();
+	const { deleteCourse } = useActions();
+
 	const courseAuthorsString = useMemo(() => {
 		const courseAuthors: string = course.authors
 			.map((authorID) => {
@@ -34,7 +37,15 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, authors }) => {
 
 	const handleCourseInfo = useCallback(() => {
 		navigate(`${ROUTES.COURSES}/${course.id}`);
-	}, [course]);
+	}, [course.id, navigate]);
+
+	const handleUpdateCourse = useCallback(() => {
+		console.log('Update!');
+	}, []);
+
+	const handleDeleteCourse = useCallback(() => {
+		deleteCourse(course);
+	}, [course, deleteCourse]);
 
 	return (
 		<div className={styles.courseCard}>
@@ -61,6 +72,8 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, authors }) => {
 				</div>
 				<div>
 					<Button children='Show course' onClick={handleCourseInfo} />
+					<Button children={'Update'} onClick={handleUpdateCourse} />
+					<Button children={'Delete'} onClick={handleDeleteCourse} />
 				</div>
 			</div>
 		</div>

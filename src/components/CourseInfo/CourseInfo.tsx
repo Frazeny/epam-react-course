@@ -66,7 +66,7 @@ const CourseInfo = () => {
 
 	useEffect(() => {
 		fetchCourse(courseId as string);
-	}, [courseId]);
+	}, [courseId, fetchCourse]);
 
 	const handleToCourses = useCallback(() => {
 		navigate(ROUTES.COURSES);
