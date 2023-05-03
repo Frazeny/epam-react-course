@@ -11,10 +11,11 @@ import { ROUTES } from '../../router/routes';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
 import CoursesService from '../../API/CoursesService';
+import { selectUser } from '../../store/servisces';
 
 const Header = () => {
 	const navigate = useNavigate();
-	const { isAuth, name } = useTypedSelector((state) => state.user);
+	const { isAuth, name } = useTypedSelector(selectUser);
 	const { logoutUser } = useActions();
 
 	const handleLogout = useCallback(() => {

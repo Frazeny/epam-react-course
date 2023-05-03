@@ -16,13 +16,14 @@ import Loader from '../UI/Loader';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { ROUTES } from '../../router/routes';
+import { selectAuthors } from '../../store/servisces';
 
 const CreateCourse: React.FC = () => {
 	const {
 		authors: storeAuthors,
 		isAuthorsLoading,
 		authorsError,
-	} = useTypedSelector((state) => state.authors);
+	} = useTypedSelector(selectAuthors);
 
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');

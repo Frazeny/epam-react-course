@@ -10,17 +10,16 @@ import { ROUTES } from '../../router/routes';
 import Loader from '../UI/Loader';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
+import { selectAuthors, selectCourses } from '../../store/servisces';
 
 const Courses: React.FC = () => {
 	const [searchQuery, setSearchQuery] = useState('');
 	const navigate = useNavigate();
 
-	const { courses, isCoursesLoading, coursesError } = useTypedSelector(
-		(state) => state.courses
-	);
-	const { authors, isAuthorsLoading, authorsError } = useTypedSelector(
-		(state) => state.authors
-	);
+	const { courses, isCoursesLoading, coursesError } =
+		useTypedSelector(selectCourses);
+	const { authors, isAuthorsLoading, authorsError } =
+		useTypedSelector(selectAuthors);
 
 	const { fetchAuthors, fetchCourses } = useActions();
 

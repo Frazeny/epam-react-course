@@ -8,11 +8,12 @@ import { ILoginForm } from '../../types/types';
 import Loader from '../UI/Loader';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
+import { selectUser } from '../../store/servisces';
 
 const Login = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-	const { isLoading, userError } = useTypedSelector((state) => state.user);
+	const { isLoading, userError } = useTypedSelector(selectUser);
 	const { fetchUser } = useActions();
 	const navigate = useNavigate();
 

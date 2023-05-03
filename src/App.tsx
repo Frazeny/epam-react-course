@@ -7,10 +7,11 @@ import { useTypedSelector } from './hooks/useTypedSelector';
 import { useActions } from './hooks/useActions';
 import { IUser } from './types/types';
 import AppRouter from './components/AppRouter/AppRouter';
+import { selectUser } from './store/servisces';
 
 function App() {
 	const { loginUser } = useActions();
-	const { isAuth } = useTypedSelector((state) => state.user);
+	const { isAuth } = useTypedSelector(selectUser);
 	console.log(isAuth);
 
 	useEffect(() => {
