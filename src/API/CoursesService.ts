@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IAuthor, ICourse, ILoginForm, IUser } from '../types/types';
+import { IAuthor, ICourse, ILoginForm, IToken, IUser } from '../types/types';
 import { LOCAL_STORAGE } from '../constants';
 import { useEffect, useState } from 'react';
 
@@ -7,9 +7,16 @@ enum ResponseBodyProps {
 	SUCCESSFUL = 'successful',
 	RESULT = 'result',
 }
+
 interface GetResponseProps<T> {
 	successful: boolean;
 	result: T;
+}
+
+interface PostLoggingProps<T> {
+	successful: boolean;
+	result: T;
+	user: IUser;
 }
 
 interface PostResponseProps<T> {
@@ -19,6 +26,19 @@ interface PostResponseProps<T> {
 
 const getAccessToken = () => {
 	return localStorage.getItem(LOCAL_STORAGE.TOKEN);
+};
+
+const putLocalAccessToken = (token: IToken) => {
+	localStorage.setItem(LOCAL_STORAGE.TOKEN, token);
+};
+
+const putLocalUser = (user: IUser) => {
+	localStorage.setItem(LOCAL_STORAGE.USER, JSON.stringify(user));
+};
+
+const deleteLocalUser = () => {
+	localStorage.removeItem(LOCAL_STORAGE.USER);
+	localStorage.removeItem(LOCAL_STORAGE.TOKEN);
 };
 
 const useFetching = <T>(promiseFn: () => T) => {
@@ -100,8 +120,19 @@ export default class CoursesService {
 	}
 
 	static async postLoginUser(user: ILoginForm) {
-		const response = await axios.post(`${SERVER_URL}/login`, user);
+		const response = await axios.post<PostLoggingProps<IToken>>(
+			`${SERVER_URL}/login`,
+			user
+		);
+
+		putLocalAccessToken(response.data.result);
+		putLocalUser(response.data.user);
+
 		return response;
+	}
+
+	static deleteLogoutUser() {
+		deleteLocalUser();
 	}
 
 	static async getCourseInfo(id: string) {
@@ -125,6 +156,7 @@ export default class CoursesService {
 			course,
 			{
 				headers: {
+					type: 'application/json',
 					Authorization: accessToken,
 				},
 			}

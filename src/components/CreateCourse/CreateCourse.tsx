@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import Button from '../../common/Button/Button';
 import Input from '../../common/Input/Input';
@@ -11,62 +11,33 @@ import { v4 as uuidv4 } from 'uuid';
 
 import styles from './CreateCourse.module.css';
 import Textarea from '../../common/Textarea/Textarea';
-import CoursesService from '../../API/CoursesService';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../UI/Loader';
+import { useActions } from '../../hooks/useActions';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { ROUTES } from '../../router/routes';
+import { selectAuthors } from '../../store/servisces';
 
 const CreateCourse: React.FC = () => {
+	const {
+		authors: storeAuthors,
+		isAuthorsLoading,
+		authorsError,
+	} = useTypedSelector(selectAuthors);
+
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
-	const [authors, setAuthors] = useState<IAuthor[]>([]);
+	const [authors, setAuthors] = useState<IAuthor[]>(storeAuthors);
 	const [courseAuthors, setCourseAuthors] = useState<IAuthor[]>([]);
 	const [authorName, setAuthorName] = useState('');
 	const [duration, setDuration] = useState(0);
 	const navigate = useNavigate();
-	const [isAuthorsLoading, setIsAuthorsLoading] = useState<boolean>(false);
-	const [getAuthorsError, setGetAuthorsError] = useState<string>('');
-	const [isAddCourseLoading, setIsAddCourseLoading] = useState<boolean>(false);
-	const [postAddCourseError, setPostAddCourseError] = useState<string>('');
+	// const [isAuthorsLoading, setIsAuthorsLoading] = useState<boolean>(false);
+	// const [getAuthorsError, setGetAuthorsError] = useState<string>('');
+	// const [isAddCourseLoading, setIsAddCourseLoading] = useState<boolean>(false);
+	// const [postAddCourseError, setPostAddCourseError] = useState<string>('');
 
-	const getAuthors = useCallback(async () => {
-		try {
-			setIsAuthorsLoading(true);
-			const response = await CoursesService.getAllAuthors();
-			setAuthors(response.data.result);
-		} catch (error) {
-			if (error instanceof Error) {
-				setGetAuthorsError(error.message);
-			} else {
-				setGetAuthorsError(`Unexpected error ${error}`);
-			}
-		} finally {
-			setIsAuthorsLoading(false);
-		}
-	}, []);
-
-	const handlePostNewCourse = useCallback(async (newCourse: ICourse) => {
-		try {
-			setIsAddCourseLoading(true);
-			setPostAddCourseError('');
-			const response = await CoursesService.postAddCourse(newCourse);
-		} catch (error) {
-			if (error instanceof Error) {
-				setPostAddCourseError(error.message);
-			} else {
-				setPostAddCourseError(`Unexpected error ${error}`);
-			}
-		} finally {
-			setIsAddCourseLoading(false);
-			if (postAddCourseError) {
-				navigate(ROUTES.COURSES);
-			}
-		}
-	}, []);
-
-	useEffect(() => {
-		getAuthors();
-	}, []);
+	const { addCourse, addAuthor } = useActions();
 
 	const addAuthorToCourse = (author: IAuthor) => {
 		setCourseAuthors((prevAuthors) => [...prevAuthors, author]);
@@ -93,6 +64,8 @@ const CreateCourse: React.FC = () => {
 			name: authorName,
 		};
 
+		addAuthor(newAuthor);
+
 		setAuthors((prevAuthors) => [...prevAuthors, newAuthor]);
 		setAuthorName('');
 	};
@@ -105,7 +78,7 @@ const CreateCourse: React.FC = () => {
 		}
 
 		const newCourse: ICourse = {
-			id: String(Date.now()),
+			id: uuidv4(),
 			title,
 			description,
 			creationDate: dateConverter(new Date()),
@@ -113,14 +86,14 @@ const CreateCourse: React.FC = () => {
 			authors: courseAuthors.map((a) => a.id),
 		};
 
-		handlePostNewCourse(newCourse);
+		addCourse(newCourse);
+		navigate(ROUTES.COURSES);
 	};
 
 	return (
 		<form className={styles.CreateCourseContainer}>
-			{(isAddCourseLoading || isAuthorsLoading) && <Loader />}
-			{getAuthorsError && <p>{getAuthorsError}</p>}
-			{postAddCourseError && <p>{postAddCourseError}</p>}
+			{isAuthorsLoading && <Loader />}
+			{authorsError && <p>{authorsError}</p>}
 			<div className={styles.CreateCourseHeader}>
 				<Input
 					id={'course-title'}

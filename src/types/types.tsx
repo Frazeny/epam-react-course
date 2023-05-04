@@ -3,6 +3,7 @@ export interface IUser {
 	name: string;
 }
 
+export type IToken = string;
 export interface ILoginForm {
 	email: string;
 	password: string;

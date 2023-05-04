@@ -1,52 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import Header from './components/Header/Header';
 import { LOCAL_STORAGE } from './constants';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { privateRoutes, publicRoutes } from './router/routes';
-import { AuthContext } from './AuthContext/AuthCountext';
+import { BrowserRouter } from 'react-router-dom';
+import { useTypedSelector } from './hooks/useTypedSelector';
+import { useActions } from './hooks/useActions';
+import { IUser } from './types/types';
+import AppRouter from './components/AppRouter/AppRouter';
+import { selectUser } from './store/servisces';
 
 function App() {
-	const [isAuth, setIsAuth] = useState(false);
+	const { loginUser } = useActions();
+	const { isAuth } = useTypedSelector(selectUser);
+	console.log(isAuth);
 
 	useEffect(() => {
-		if (localStorage.getItem(LOCAL_STORAGE.TOKEN)) {
-			setIsAuth(true);
+		const localUser = localStorage.getItem(LOCAL_STORAGE.USER);
+		const token = localStorage.getItem(LOCAL_STORAGE.TOKEN);
+		if (localUser && token) {
+			const user: IUser = JSON.parse(localUser);
+			loginUser({ user, token });
 		}
-	}, []);
+	}, [loginUser]);
 	return (
 		<div className='App'>
-			<AuthContext.Provider
-				value={{
-					isAuth,
-					setIsAuth,
-				}}
-			>
-				<BrowserRouter>
-					<Header />
-					<Routes>
-						{isAuth
-							? privateRoutes.map((route) => {
-									return (
-										<Route
-											path={route.path}
-											element={route.component}
-											key={route.path}
-										/>
-									);
-							  })
-							: publicRoutes.map((route) => {
-									return (
-										<Route
-											path={route.path}
-											element={route.component}
-											key={route.path}
-										/>
-									);
-							  })}
-					</Routes>
-				</BrowserRouter>
-			</AuthContext.Provider>
+			<BrowserRouter>
+				<Header />
+				<AppRouter />
+			</BrowserRouter>
 		</div>
 	);
 }

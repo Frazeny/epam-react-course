@@ -1,44 +1,35 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 
 import Button from '../../common/Button/Button';
 import { Logo } from './components/Logo/Logo';
 
-import { HEADER_BUTTON_TEXT, LOCAL_STORAGE } from '../../constants';
+import { HEADER_BUTTON_TEXT } from '../../constants';
 
 import styles from './Header.module.css';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../router/routes';
-import { AuthContext } from '../../AuthContext/AuthCountext';
-import { IUser } from '../../types/types';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { useActions } from '../../hooks/useActions';
+import CoursesService from '../../API/CoursesService';
+import { selectUser } from '../../store/servisces';
 
 const Header = () => {
-	const [user, setUser] = useState<IUser | null>(null);
 	const navigate = useNavigate();
+	const { isAuth, name } = useTypedSelector(selectUser);
+	const { logoutUser } = useActions();
 
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const { isAuth, setIsAuth } = useContext(AuthContext);
-	useEffect(() => {
-		if (isAuth) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			setUser(JSON.parse(localStorage.getItem(LOCAL_STORAGE.USER)));
-		}
-	}, []);
 	const handleLogout = useCallback(() => {
-		localStorage.removeItem(LOCAL_STORAGE.TOKEN);
-		localStorage.removeItem(LOCAL_STORAGE.USER);
+		logoutUser();
+		CoursesService.deleteLogoutUser();
 		navigate(ROUTES.LOGIN);
-		setIsAuth(false);
-	}, [navigate, user]);
-	console.log(isAuth, setIsAuth);
+	}, [logoutUser, navigate]);
 
 	return (
 		<header className={styles.header}>
 			<Logo />
-			{isAuth && localStorage.getItem(LOCAL_STORAGE.USER) ? (
+			{isAuth ? (
 				<div className={styles.header__user}>
-					<span className={styles.userName}>{user?.name}</span>
+					<span className={styles.userName}>{name}</span>
 					<Button children={HEADER_BUTTON_TEXT} onClick={handleLogout} />
 				</div>
 			) : null}

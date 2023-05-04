@@ -5,59 +5,28 @@ import Button from '../../common/Button/Button';
 import SearchBar from './components/SearchBar/SearchBar';
 
 import styles from './Courses.module.css';
-
-import { IAuthor, ICourse } from '../../types/types';
-import CoursesService from '../../API/CoursesService';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../router/routes';
 import Loader from '../UI/Loader';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { useActions } from '../../hooks/useActions';
+import { selectAuthors, selectCourses } from '../../store/servisces';
 
 const Courses: React.FC = () => {
-	const [courses, setCourses] = useState<ICourse[]>([]);
-	const [authors, setAuthors] = useState<IAuthor[]>([]);
 	const [searchQuery, setSearchQuery] = useState('');
 	const navigate = useNavigate();
-	const [isCoursesLoading, setIsCourseLoading] = useState<boolean>(false);
-	const [getCoursesError, setGetCoursesError] = useState<string>('');
-	const [isAuthorsLoading, setIsAuthorsLoading] = useState<boolean>(false);
-	const [getAuthorsError, setGetAuthorsError] = useState<string>('');
 
-	const getCourses = useCallback(async () => {
-		try {
-			setIsCourseLoading(true);
-			const response = await CoursesService.getAllCourses();
-			setCourses(response);
-		} catch (error) {
-			if (error instanceof Error) {
-				setGetCoursesError(error.message);
-			} else {
-				setGetCoursesError(`Unexpected error ${error}`);
-			}
-		} finally {
-			setIsCourseLoading(false);
-		}
-	}, []);
+	const { courses, isCoursesLoading, coursesError } =
+		useTypedSelector(selectCourses);
+	const { authors, isAuthorsLoading, authorsError } =
+		useTypedSelector(selectAuthors);
 
-	const getAuthors = useCallback(async () => {
-		try {
-			setIsAuthorsLoading(true);
-			const response = await CoursesService.getAllAuthors();
-			setAuthors(response.data.result);
-		} catch (error) {
-			if (error instanceof Error) {
-				setGetAuthorsError(error.message);
-			} else {
-				setGetAuthorsError(`Unexpected error ${error}`);
-			}
-		} finally {
-			setIsAuthorsLoading(false);
-		}
-	}, []);
+	const { fetchAuthors, fetchCourses } = useActions();
 
 	useEffect(() => {
-		getCourses();
-		getAuthors();
-	}, [getCourses, getAuthors]);
+		fetchAuthors();
+		fetchCourses();
+	}, [fetchAuthors, fetchCourses]);
 
 	const searchedCourses = useMemo(() => {
 		if (searchQuery) {
@@ -88,8 +57,8 @@ const Courses: React.FC = () => {
 				/>
 				<Button children='Add new course' onClick={handleCreateCourse} />
 			</div>
-			{getAuthorsError && <p>getAuthorsError</p>}
-			{getCoursesError && <p>getCoursesError</p>}
+			{coursesError && <p>{coursesError}</p>}
+			{authorsError && <p>{authorsError}</p>}
 			{isCoursesLoading || isAuthorsLoading ? (
 				<Loader />
 			) : (
