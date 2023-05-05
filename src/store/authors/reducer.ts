@@ -1,12 +1,12 @@
-import { mockedAuthorsList } from '../../constants';
 import {
+	AuthorLibrary,
 	AuthorsActions,
 	AuthorsActionTypes,
 	AuthorsState,
 } from './actionTypes';
 
 const initialState: AuthorsState = {
-	authors: mockedAuthorsList,
+	authors: {},
 	isAuthorsLoading: false,
 	authorsError: null,
 };
@@ -26,14 +26,13 @@ export const useReducer = (
 			return {
 				...state,
 				isAuthorsLoading: false,
-				authors: [
+				authors: {
 					...state.authors,
-					...action.payload.filter((author) => {
-						return !state.authors.find(
-							(existingAuthor) => existingAuthor.id === author.id
-						);
-					}),
-				],
+					...action.payload.reduce((acc: AuthorLibrary, author) => {
+						acc[author.id] = author;
+						return acc;
+					}, {}),
+				},
 			};
 		case AuthorsActionTypes.FETCH_AUTHORS_ERROR:
 			return {
@@ -44,7 +43,23 @@ export const useReducer = (
 		case AuthorsActionTypes.ADD_AUTHOR:
 			return {
 				...state,
-				authors: [...state.authors, action.payload],
+				isAuthorsLoading: true,
+				authorsError: null,
+			};
+		case AuthorsActionTypes.ADD_AUTHOR_SUCCESS:
+			return {
+				...state,
+				isAuthorsLoading: false,
+				authors: {
+					...state.authors,
+					[action.payload.id]: action.payload,
+				},
+			};
+		case AuthorsActionTypes.ADD_AUTHOR_ERROR:
+			return {
+				...state,
+				isAuthorsLoading: false,
+				authorsError: action.payload,
 			};
 		default:
 			return state;

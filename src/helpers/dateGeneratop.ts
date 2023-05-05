@@ -1,3 +1,3 @@
 export function dateConverter(date: Date) {
-	return date.toLocaleString('ua-UA', { timeZone: 'UTC' }).split(',')[0];
+	return date.toLocaleString('uk-UA', { timeZone: 'UTC' }).split(',')[0];
 }

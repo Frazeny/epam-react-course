@@ -5,21 +5,16 @@ import { LOCAL_STORAGE } from './constants';
 import { BrowserRouter } from 'react-router-dom';
 import { useTypedSelector } from './hooks/useTypedSelector';
 import { useActions } from './hooks/useActions';
-import { IUser } from './types/types';
 import AppRouter from './components/AppRouter/AppRouter';
 import { selectUser } from './store/servisces';
 
 function App() {
 	const { loginUser } = useActions();
-	const { isAuth } = useTypedSelector(selectUser);
-	console.log(isAuth);
 
 	useEffect(() => {
-		const localUser = localStorage.getItem(LOCAL_STORAGE.USER);
 		const token = localStorage.getItem(LOCAL_STORAGE.TOKEN);
-		if (localUser && token) {
-			const user: IUser = JSON.parse(localUser);
-			loginUser({ user, token });
+		if (token) {
+			loginUser(token);
 		}
 	}, [loginUser]);
 	return (

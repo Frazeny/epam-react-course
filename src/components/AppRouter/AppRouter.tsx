@@ -1,33 +1,23 @@
 import React, { FC } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import { privateRoutes, publicRoutes } from '../../router/routes';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { selectUser } from '../../store/servisces';
+import { UserRoles } from '../../types/types';
+import PublicRoutes from './components/PublicRoutes/PublicRoutes';
+import PrivateAdminRoutes from './components/PrivateAdminRoutes/PrivateAdminRoutes';
+import PrivateRoutes from './components/PrivateRoutes/PrivateRoutes';
 
 const AppRouter: FC = () => {
-	const { isAuth } = useTypedSelector(selectUser);
+	const { isAuth, role } = useTypedSelector(selectUser);
 	return (
-		<Routes>
-			{isAuth
-				? privateRoutes.map((route) => {
-						return (
-							<Route
-								path={route.path}
-								element={route.component}
-								key={route.path}
-							/>
-						);
-				  })
-				: publicRoutes.map((route) => {
-						return (
-							<Route
-								path={route.path}
-								element={route.component}
-								key={route.path}
-							/>
-						);
-				  })}
-		</Routes>
+		<>
+			{isAuth && role === UserRoles.ADMIN ? (
+				<PrivateAdminRoutes />
+			) : isAuth ? (
+				<PrivateRoutes />
+			) : (
+				<PublicRoutes />
+			)}
+		</>
 	);
 };
 

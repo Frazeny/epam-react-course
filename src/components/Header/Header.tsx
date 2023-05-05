@@ -10,28 +10,32 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../router/routes';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
-import CoursesService from '../../API/CoursesService';
 import { selectUser } from '../../store/servisces';
+import Loader from '../UI/Loader';
 
 const Header = () => {
 	const navigate = useNavigate();
-	const { isAuth, name } = useTypedSelector(selectUser);
+	const { isAuth, name, token, isLoading, userError } =
+		useTypedSelector(selectUser);
 	const { logoutUser } = useActions();
 
 	const handleLogout = useCallback(() => {
-		logoutUser();
-		CoursesService.deleteLogoutUser();
+		logoutUser(token);
 		navigate(ROUTES.LOGIN);
-	}, [logoutUser, navigate]);
+	}, [logoutUser, navigate, token]);
 
 	return (
 		<header className={styles.header}>
 			<Logo />
 			{isAuth ? (
-				<div className={styles.header__user}>
-					<span className={styles.userName}>{name}</span>
-					<Button children={HEADER_BUTTON_TEXT} onClick={handleLogout} />
-				</div>
+				isLoading ? (
+					<Loader />
+				) : (
+					<div className={styles.header__user}>
+						<span className={styles.userName}>{name}</span>
+						<Button children={HEADER_BUTTON_TEXT} onClick={handleLogout} />
+					</div>
+				)
 			) : null}
 		</header>
 	);

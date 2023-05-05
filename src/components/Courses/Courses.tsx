@@ -10,7 +10,12 @@ import { ROUTES } from '../../router/routes';
 import Loader from '../UI/Loader';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
-import { selectAuthors, selectCourses } from '../../store/servisces';
+import {
+	selectAuthors,
+	selectCourses,
+	selectUser,
+} from '../../store/servisces';
+import { UserRoles } from '../../types/types';
 
 const Courses: React.FC = () => {
 	const [searchQuery, setSearchQuery] = useState('');
@@ -20,6 +25,7 @@ const Courses: React.FC = () => {
 		useTypedSelector(selectCourses);
 	const { authors, isAuthorsLoading, authorsError } =
 		useTypedSelector(selectAuthors);
+	const { role } = useTypedSelector(selectUser);
 
 	const { fetchAuthors, fetchCourses } = useActions();
 
@@ -55,7 +61,9 @@ const Courses: React.FC = () => {
 					inputName={'course-search'}
 					onSearch={handleSearch}
 				/>
-				<Button children='Add new course' onClick={handleCreateCourse} />
+				{role === UserRoles.ADMIN ? (
+					<Button children='Add new course' onClick={handleCreateCourse} />
+				) : null}
 			</div>
 			{coursesError && <p>{coursesError}</p>}
 			{authorsError && <p>{authorsError}</p>}
@@ -63,7 +71,11 @@ const Courses: React.FC = () => {
 				<Loader />
 			) : (
 				searchedCourses.map((course) => (
-					<CourseCard key={course.id} course={course} authors={authors} />
+					<CourseCard
+						key={course.id}
+						course={course}
+						authors={Object.values(authors)}
+					/>
 				))
 			)}
 		</div>

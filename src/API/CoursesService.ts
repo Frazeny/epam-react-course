@@ -1,12 +1,12 @@
 import axios from 'axios';
-import { IAuthor, ICourse, ILoginForm, IToken, IUser } from '../types/types';
-import { LOCAL_STORAGE } from '../constants';
-import { useEffect, useState } from 'react';
-
-enum ResponseBodyProps {
-	SUCCESSFUL = 'successful',
-	RESULT = 'result',
-}
+import {
+	IAuthor,
+	ICourse,
+	ILoginForm,
+	IServerUserInfo,
+	IToken,
+	IUser,
+} from '../types/types';
 
 interface GetResponseProps<T> {
 	successful: boolean;
@@ -23,78 +23,6 @@ interface PostResponseProps<T> {
 	successful: boolean;
 	result: T;
 }
-
-const getAccessToken = () => {
-	return localStorage.getItem(LOCAL_STORAGE.TOKEN);
-};
-
-const putLocalAccessToken = (token: IToken) => {
-	localStorage.setItem(LOCAL_STORAGE.TOKEN, token);
-};
-
-const putLocalUser = (user: IUser) => {
-	localStorage.setItem(LOCAL_STORAGE.USER, JSON.stringify(user));
-};
-
-const deleteLocalUser = () => {
-	localStorage.removeItem(LOCAL_STORAGE.USER);
-	localStorage.removeItem(LOCAL_STORAGE.TOKEN);
-};
-
-const useFetching = <T>(promiseFn: () => T) => {
-	const [result, setResult] = useState<T | null>(null);
-	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [error, setError] = useState<string>('');
-
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				setIsLoading(true);
-				const response = promiseFn();
-				setResult(response);
-			} catch (error) {
-				if (error instanceof Error) {
-					setError(error.message);
-				} else {
-					setError(`Unknown error: ${error}`);
-				}
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchData();
-	}, [promiseFn]);
-
-	return [result, isLoading, error] as const;
-};
-
-// type IMethod = keyof typeof AxiosRe;
-
-// async function API(
-// 	url,
-// 	method: keyof typeof axios.AxiosHeaders,
-// 	data,
-// 	needAccessToken = false
-// ) {
-// 	//   Set loader true
-// 	try {
-// 		let config = {};
-// 		if (needAccessToken) {
-// 			config = {
-// 				...config,
-// 				headers: {
-// 					Authorization: `${getAccessToken()}`,
-// 				},
-// 			};
-// 		}
-// 		const res = await axios[method](url, data, config);
-// 	} catch (error) {
-// 		//   set Text error
-// 	} finally {
-// 		//   set loader false
-// 	}
-// }
 
 const SERVER_URL = 'http://localhost:4000';
 
@@ -125,14 +53,31 @@ export default class CoursesService {
 			user
 		);
 
-		putLocalAccessToken(response.data.result);
-		putLocalUser(response.data.user);
+		return response;
+	}
+
+	static async getUserInfo(accessToken: IToken) {
+		const response = await axios.get<GetResponseProps<IServerUserInfo>>(
+			`${SERVER_URL}/users/me`,
+			{
+				headers: {
+					type: 'application/json',
+					Authorization: `Bearer ${accessToken}`,
+				},
+			}
+		);
 
 		return response;
 	}
 
-	static deleteLogoutUser() {
-		deleteLocalUser();
+	static async deleteLogoutUser(accessToken: IToken) {
+		const response = await axios.delete(`${SERVER_URL}/logout`, {
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+		});
+
+		return response;
 	}
 
 	static async getCourseInfo(id: string) {
@@ -149,15 +94,51 @@ export default class CoursesService {
 		return response;
 	}
 
-	static async postAddCourse(course: ICourse) {
-		const accessToken = getAccessToken();
-		const response = await axios.post<PostResponseProps<string>>(
+	static async postAddCourse(course: ICourse, accessToken: IToken) {
+		const response = await axios.post<PostResponseProps<ICourse>>(
 			`${SERVER_URL}/courses/add`,
 			course,
 			{
 				headers: {
 					type: 'application/json',
-					Authorization: accessToken,
+					Authorization: `Bearer ${accessToken}`,
+				},
+			}
+		);
+		return response;
+	}
+
+	static async putUpdatedCourse(course: ICourse, accessToken: IToken) {
+		const response = await axios.put(
+			`${SERVER_URL}/courses/${course.id}`,
+			course,
+			{
+				headers: {
+					type: 'application/json',
+					Authorization: `Bearer${accessToken}`,
+				},
+			}
+		);
+	}
+
+	static async deleteCourse(course: ICourse, accessToken: IToken) {
+		const response = await axios.delete(`${SERVER_URL}/courses/${course.id}`, {
+			headers: {
+				type: 'application/json',
+				Authorization: `Bearer ${accessToken}`,
+			},
+		});
+		return response;
+	}
+
+	static async postAddNewAuthor(author: IAuthor, accessToken: IToken) {
+		const response = await axios.post<PostResponseProps<IAuthor>>(
+			`${SERVER_URL}/authors/add`,
+			author,
+			{
+				headers: {
+					type: 'application/json',
+					Authorization: `Bearer ${accessToken}`,
 				},
 			}
 		);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Button from '../../common/Button/Button';
 import Input from '../../common/Input/Input';
@@ -9,47 +9,82 @@ import { formattedDuration } from '../../helpers/pipeDuration';
 import { dateConverter } from '../../helpers/dateGeneratop';
 import { v4 as uuidv4 } from 'uuid';
 
-import styles from './CreateCourse.module.css';
+import styles from './CourseForm.module.css';
 import Textarea from '../../common/Textarea/Textarea';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Loader from '../UI/Loader';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { ROUTES } from '../../router/routes';
-import { selectAuthors } from '../../store/servisces';
+import {
+	selectAuthors,
+	selectCourses,
+	selectUser,
+} from '../../store/servisces';
 
-const CreateCourse: React.FC = () => {
+const CourseForm: React.FC = () => {
+	const {
+		courses: storeCourses,
+		isCoursesLoading,
+		coursesError,
+	} = useTypedSelector(selectCourses);
 	const {
 		authors: storeAuthors,
 		isAuthorsLoading,
 		authorsError,
 	} = useTypedSelector(selectAuthors);
+	const { token } = useTypedSelector(selectUser);
 
-	const [title, setTitle] = useState('');
-	const [description, setDescription] = useState('');
-	const [authors, setAuthors] = useState<IAuthor[]>(storeAuthors);
+	const { fetchAuthors, fetchCourses } = useActions();
+
+	const { courseId } = useParams();
+
+	const course = useMemo(() => {
+		return storeCourses.find((existingCourses) => {
+			return existingCourses.id === courseId;
+		});
+	}, [courseId, storeCourses]);
+
+	useEffect(() => {
+		fetchAuthors();
+		fetchCourses();
+		const courseAuthors: IAuthor[] = [],
+			authors: IAuthor[] = [];
+		Object.keys(storeAuthors).forEach((authorId) => {
+			if (course?.authors.some((id) => id === authorId)) {
+				courseAuthors.push(storeAuthors[authorId]);
+			} else {
+				authors.push(storeAuthors[authorId]);
+			}
+		});
+		setAuthors(authors);
+		setCourseAuthors(courseAuthors);
+	}, [course, fetchAuthors, fetchCourses]);
+
+	const navigate = useNavigate();
+
+	const [title, setTitle] = useState(course?.title ?? '');
+	const [description, setDescription] = useState(course?.description ?? '');
+	const [authors, setAuthors] = useState<IAuthor[]>([]);
 	const [courseAuthors, setCourseAuthors] = useState<IAuthor[]>([]);
 	const [authorName, setAuthorName] = useState('');
-	const [duration, setDuration] = useState(0);
-	const navigate = useNavigate();
-	// const [isAuthorsLoading, setIsAuthorsLoading] = useState<boolean>(false);
-	// const [getAuthorsError, setGetAuthorsError] = useState<string>('');
-	// const [isAddCourseLoading, setIsAddCourseLoading] = useState<boolean>(false);
-	// const [postAddCourseError, setPostAddCourseError] = useState<string>('');
+	const [duration, setDuration] = useState<number>(course?.duration ?? 0);
 
-	const { addCourse, addAuthor } = useActions();
-
-	const addAuthorToCourse = (author: IAuthor) => {
-		setCourseAuthors((prevAuthors) => [...prevAuthors, author]);
+	const addAuthorToCourse = useCallback((author: IAuthor) => {
+		setCourseAuthors((prevAuthors) => {
+			return [...prevAuthors, author];
+		});
 		setAuthors((prevAuthors) => prevAuthors.filter((a) => a.id !== author.id));
-	};
+	}, []);
 
-	const removeAuthorFromCourse = (author: IAuthor) => {
+	const { addCourse, updateCourse, addAuthor } = useActions();
+
+	const removeAuthorFromCourse = useCallback((author: IAuthor) => {
 		setAuthors((prevAuthors) => [...prevAuthors, author]);
-		setCourseAuthors((prevAuthors) =>
-			prevAuthors.filter((a) => a.id !== author.id)
-		);
-	};
+		setCourseAuthors((prevAuthors) => {
+			return prevAuthors.filter((a) => a.id !== author.id);
+		});
+	}, []);
 
 	const createAuthor = (e: React.SyntheticEvent) => {
 		e.preventDefault();
@@ -64,36 +99,84 @@ const CreateCourse: React.FC = () => {
 			name: authorName,
 		};
 
-		addAuthor(newAuthor);
+		addAuthor(newAuthor, token);
 
 		setAuthors((prevAuthors) => [...prevAuthors, newAuthor]);
 		setAuthorName('');
 	};
 
-	const createCourse = (event: React.SyntheticEvent) => {
-		event.preventDefault();
-		if (title.length === 0 || description.length < 2 || duration <= 0) {
-			alert('Please fill in all fields correctly.');
-			return;
-		}
+	const handleCreateCourse = useCallback(
+		(event: React.SyntheticEvent) => {
+			event.preventDefault();
+			if (title.length === 0 || description.length < 2 || duration <= 0) {
+				alert('Please fill in all fields correctly.');
+				return;
+			}
 
-		const newCourse: ICourse = {
-			id: uuidv4(),
-			title,
+			const newCourse: ICourse = {
+				id: uuidv4(),
+				title,
+				description,
+				creationDate: dateConverter(new Date()),
+				duration,
+				authors: courseAuthors.map((a) => a.id),
+			};
+			addCourse(newCourse, token);
+			if (!coursesError) {
+				navigate(ROUTES.COURSES);
+			}
+		},
+		[
+			addCourse,
+			courseAuthors,
+			coursesError,
 			description,
-			creationDate: dateConverter(new Date()),
 			duration,
-			authors: courseAuthors.map((a) => a.id),
-		};
+			navigate,
+			title,
+			token,
+		]
+	);
 
-		addCourse(newCourse);
-		navigate(ROUTES.COURSES);
-	};
+	const handleUpdateCourse = useCallback(
+		(event: React.SyntheticEvent) => {
+			event.preventDefault();
+			if (title.length === 0 || description.length < 2 || duration <= 0) {
+				alert('Please fill in all fields correctly.');
+				return;
+			}
+
+			const updatedCourse: ICourse = {
+				id: courseId as string,
+				title,
+				description,
+				creationDate: dateConverter(new Date()),
+				duration,
+				authors: courseAuthors.map((a) => a.id),
+			};
+			updateCourse(updatedCourse, token);
+			if (!coursesError) {
+				navigate(ROUTES.COURSES);
+			}
+		},
+		[
+			courseAuthors,
+			courseId,
+			coursesError,
+			description,
+			duration,
+			navigate,
+			title,
+			token,
+			updateCourse,
+		]
+	);
 
 	return (
 		<form className={styles.CreateCourseContainer}>
-			{isAuthorsLoading && <Loader />}
+			{(isAuthorsLoading || isCoursesLoading) && <Loader />}
 			{authorsError && <p>{authorsError}</p>}
+			{coursesError && <p>{authorsError}</p>}
 			<div className={styles.CreateCourseHeader}>
 				<Input
 					id={'course-title'}
@@ -101,9 +184,17 @@ const CreateCourse: React.FC = () => {
 					type='text'
 					labelText='Title'
 					placeholderText='Enter title...'
+					value={title}
 					onChange={(event) => setTitle(event.target.value)}
 				/>
-				<Button children='Create Course' onClick={(e) => createCourse(e)} />
+				<Button
+					children={courseId ? 'Update Course' : 'Create Course'}
+					onClick={
+						courseId
+							? (e) => handleUpdateCourse(e)
+							: (e) => handleCreateCourse(e)
+					}
+				/>
 			</div>
 			<div className={styles.CreateCourseDescription}>
 				<Textarea
@@ -111,6 +202,7 @@ const CreateCourse: React.FC = () => {
 					name={'course-description'}
 					labelText='Description'
 					placeholderText='Enter description'
+					value={description}
 					required={true}
 					onChange={(event) => setDescription(event.target.value)}
 				/>
@@ -138,6 +230,7 @@ const CreateCourse: React.FC = () => {
 							name={'course-duration'}
 							type='number'
 							placeholderText='Enter duration in minutes...'
+							value={`${duration}`}
 							labelText='Duration'
 							onChange={(event) => setDuration(parseInt(event.target.value))}
 						/>
@@ -171,7 +264,7 @@ const CreateCourse: React.FC = () => {
 					<div className={styles.authorsContainer__list}>
 						<h3>Course authors</h3>
 						<ul className={styles.authorsList}>
-							{courseAuthors.map((courseAuthor) => {
+							{courseAuthors?.map((courseAuthor) => {
 								return (
 									<li
 										className={styles.authorsList__item}
@@ -193,4 +286,4 @@ const CreateCourse: React.FC = () => {
 	);
 };
 
-export default CreateCourse;
+export default CourseForm;

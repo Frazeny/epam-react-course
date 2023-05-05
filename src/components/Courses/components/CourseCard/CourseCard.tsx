@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 
-import { ICourse, IAuthor } from '../../../../types/types';
+import { ICourse, IAuthor, UserRoles } from '../../../../types/types';
 import { formattedDuration } from '../../../../helpers/pipeDuration';
 
 import Button from '../../../../common/Button/Button';
@@ -11,6 +11,8 @@ import { dateConverter } from '../../../../helpers/dateGeneratop';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../../router/routes';
 import { useActions } from '../../../../hooks/useActions';
+import { useTypedSelector } from '../../../../hooks/useTypedSelector';
+import { selectUser } from '../../../../store/servisces';
 
 interface CourseCardProps {
 	course: ICourse;
@@ -22,6 +24,7 @@ const MAX_AUTHORS_STRING_LENGTH = 60;
 const CourseCard: React.FC<CourseCardProps> = ({ course, authors }) => {
 	const navigate = useNavigate();
 	const { deleteCourse } = useActions();
+	const { token, role } = useTypedSelector(selectUser);
 
 	const courseAuthorsString = useMemo(() => {
 		const courseAuthors: string = course.authors
@@ -30,7 +33,8 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, authors }) => {
 				return author ? author.name : '';
 			})
 			.join(', ');
-		return authors.length < MAX_AUTHORS_STRING_LENGTH
+
+		return courseAuthors.length < MAX_AUTHORS_STRING_LENGTH
 			? courseAuthors
 			: courseAuthors.slice(0, MAX_AUTHORS_STRING_LENGTH) + '...';
 	}, [authors, course.authors]);
@@ -40,12 +44,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, authors }) => {
 	}, [course.id, navigate]);
 
 	const handleUpdateCourse = useCallback(() => {
-		console.log('Update!');
-	}, []);
+		navigate(`${ROUTES.EDIT_COURSE}/${course.id}`);
+	}, [course.id, navigate]);
 
 	const handleDeleteCourse = useCallback(() => {
-		deleteCourse(course);
-	}, [course, deleteCourse]);
+		deleteCourse(course, token);
+	}, [course, deleteCourse, token]);
 
 	return (
 		<div className={styles.courseCard}>
@@ -72,8 +76,13 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, authors }) => {
 				</div>
 				<div>
 					<Button children='Show course' onClick={handleCourseInfo} />
-					<Button children={'Update'} onClick={handleUpdateCourse} />
-					<Button children={'Delete'} onClick={handleDeleteCourse} />
+					{role === UserRoles.ADMIN ? (
+						<Button children={'Update'} onClick={handleUpdateCourse} />
+					) : null}
+
+					{role === UserRoles.ADMIN ? (
+						<Button children={'Delete'} onClick={handleDeleteCourse} />
+					) : null}
 				</div>
 			</div>
 		</div>

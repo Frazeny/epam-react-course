@@ -9,6 +9,7 @@ import Loader from '../UI/Loader';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
 import { selectUser } from '../../store/servisces';
+import { loginUser } from '../../store/user/actionCreators';
 
 const Login = () => {
 	const [email, setEmail] = useState('');
@@ -16,6 +17,7 @@ const Login = () => {
 	const { isLoading, userError } = useTypedSelector(selectUser);
 	const { fetchUser } = useActions();
 	const navigate = useNavigate();
+	const { token } = useTypedSelector(selectUser);
 
 	const handleLogin = useCallback(
 		async (event: React.FormEvent<HTMLFormElement>) => {
@@ -24,11 +26,12 @@ const Login = () => {
 			const User: ILoginForm = { email, password };
 
 			await fetchUser(User);
+			await loginUser(token);
 			if (!userError && !isLoading) {
 				navigate(ROUTES.COURSES);
 			}
 		},
-		[email, fetchUser, isLoading, navigate, password, userError]
+		[email, fetchUser, isLoading, navigate, password, token, userError]
 	);
 
 	return (
