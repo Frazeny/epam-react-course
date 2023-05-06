@@ -10,6 +10,7 @@ import { selectUser } from './store/servisces';
 
 function App() {
 	const { loginUser } = useActions();
+	const { isAuth, role, token } = useTypedSelector(selectUser);
 
 	useEffect(() => {
 		const token = localStorage.getItem(LOCAL_STORAGE.TOKEN);
@@ -17,6 +18,7 @@ function App() {
 			loginUser(token);
 		}
 	}, [loginUser]);
+	console.log(isAuth, role, token);
 	return (
 		<div className='App'>
 			<BrowserRouter>

@@ -16,6 +16,7 @@ import {
 	selectUser,
 } from '../../store/servisces';
 import { UserRoles } from '../../types/types';
+import { loginUser } from '../../store/user/actionCreators';
 
 const Courses: React.FC = () => {
 	const [searchQuery, setSearchQuery] = useState('');
@@ -25,14 +26,15 @@ const Courses: React.FC = () => {
 		useTypedSelector(selectCourses);
 	const { authors, isAuthorsLoading, authorsError } =
 		useTypedSelector(selectAuthors);
-	const { role } = useTypedSelector(selectUser);
+	const { role, token } = useTypedSelector(selectUser);
 
 	const { fetchAuthors, fetchCourses } = useActions();
 
 	useEffect(() => {
 		fetchAuthors();
 		fetchCourses();
-	}, [fetchAuthors, fetchCourses]);
+		loginUser(token);
+	}, [fetchAuthors, fetchCourses, loginUser]);
 
 	const searchedCourses = useMemo(() => {
 		if (searchQuery) {

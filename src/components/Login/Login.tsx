@@ -27,19 +27,20 @@ const Login = () => {
 
 			await fetchUser(User);
 			await loginUser(token);
-			if (!userError && !isLoading) {
-				navigate(ROUTES.COURSES);
+			if (userError || isLoading) {
+				return;
 			}
+			navigate(ROUTES.ROOT);
 		},
 		[email, fetchUser, isLoading, navigate, password, token, userError]
 	);
 
 	return (
 		<div className={styles.container}>
+			{userError && <p>{userError}</p>}
+			{isLoading && <Loader />}
 			<form className={styles.form} onSubmit={handleLogin}>
 				<h1>Login</h1>
-				{userError && <p>{userError}</p>}
-				{isLoading && <Loader />}
 				<Input
 					id='email'
 					name='email'

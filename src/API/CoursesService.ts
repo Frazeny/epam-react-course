@@ -61,7 +61,7 @@ export default class CoursesService {
 			`${SERVER_URL}/users/me`,
 			{
 				headers: {
-					type: 'application/json',
+					// type: 'application/json',
 					Authorization: `Bearer ${accessToken}`,
 				},
 			}
@@ -100,7 +100,7 @@ export default class CoursesService {
 			course,
 			{
 				headers: {
-					type: 'application/json',
+					'Content-Type': 'application/json',
 					Authorization: `Bearer ${accessToken}`,
 				},
 			}
@@ -114,7 +114,7 @@ export default class CoursesService {
 			course,
 			{
 				headers: {
-					type: 'application/json',
+					'Content-Type': 'application/json',
 					Authorization: `Bearer${accessToken}`,
 				},
 			}

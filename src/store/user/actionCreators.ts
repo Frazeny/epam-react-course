@@ -37,8 +37,10 @@ export const loginUser = (token: IToken) => {
 	return async (dispatch: Dispatch<UserActions>) => {
 		try {
 			dispatch({ type: UserActionTypes.LOGIN_USER });
+			console.log('LOGIN_USER');
 			const response = await CoursesService.getUserInfo(token);
 			localStorage.setItem('test', JSON.stringify(response.data.result));
+			console.log('LOGIN_USER_SUCCESS');
 
 			dispatch({
 				type: UserActionTypes.LOGIN_USER_SUCCESS,
@@ -48,6 +50,7 @@ export const loginUser = (token: IToken) => {
 				},
 			});
 		} catch (error) {
+			console.log('LOGIN_USER_ERROR');
 			if (error instanceof Error) {
 				dispatch({
 					type: UserActionTypes.LOGIN_USER_ERROR,
