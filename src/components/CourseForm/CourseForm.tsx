@@ -22,6 +22,10 @@ import {
 	selectUser,
 } from '../../store/servisces';
 
+const COURSE_CREATION_ERROR_MESSAGE = 'Please fill in all fields correctly.';
+const AUTHOR_CREATION_ERROR_MESSAGE =
+	'Author name must be at least 2 characters long.';
+
 const CourseForm: React.FC = () => {
 	const {
 		courses: storeCourses,
@@ -69,6 +73,8 @@ const CourseForm: React.FC = () => {
 	const [courseAuthors, setCourseAuthors] = useState<IAuthor[]>([]);
 	const [authorName, setAuthorName] = useState('');
 	const [duration, setDuration] = useState<number>(course?.duration ?? 0);
+	const [isFormValid, setIsFormValid] = useState<boolean>(true);
+	const [isAuthorValid, setIsAuthorValid] = useState<boolean>(true);
 
 	const addAuthorToCourse = useCallback((author: IAuthor) => {
 		setCourseAuthors((prevAuthors) => {
@@ -90,7 +96,7 @@ const CourseForm: React.FC = () => {
 		e.preventDefault();
 
 		if (authorName.length < 2) {
-			alert('Author name must be at least 2 characters long.');
+			setIsAuthorValid(false);
 			return;
 		}
 
@@ -108,8 +114,9 @@ const CourseForm: React.FC = () => {
 	const handleCreateCourse = useCallback(
 		(event: React.SyntheticEvent) => {
 			event.preventDefault();
+			setIsFormValid(true);
 			if (title.length === 0 || description.length < 2 || duration <= 0) {
-				alert('Please fill in all fields correctly.');
+				setIsFormValid(false);
 				return;
 			}
 
@@ -142,7 +149,7 @@ const CourseForm: React.FC = () => {
 		(event: React.SyntheticEvent) => {
 			event.preventDefault();
 			if (title.length === 0 || description.length < 2 || duration <= 0) {
-				alert('Please fill in all fields correctly.');
+				setIsFormValid(false);
 				return;
 			}
 
@@ -174,6 +181,8 @@ const CourseForm: React.FC = () => {
 
 	return (
 		<form className={styles.CreateCourseContainer}>
+			{!isFormValid ? <p>{COURSE_CREATION_ERROR_MESSAGE}</p> : null}
+			{!isAuthorValid ? <p>{AUTHOR_CREATION_ERROR_MESSAGE}</p> : null}
 			{(isAuthorsLoading || isCoursesLoading) && <Loader />}
 			{authorsError && <p>{authorsError}</p>}
 			{coursesError && <p>{authorsError}</p>}
