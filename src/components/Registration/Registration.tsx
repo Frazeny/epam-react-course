@@ -34,7 +34,7 @@ const Registration = () => {
 				setIsRegistrationLoading(false);
 			}
 		},
-		[]
+		[email, name, navigate, password]
 	);
 
 	return (

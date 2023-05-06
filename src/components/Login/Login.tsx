@@ -9,6 +9,7 @@ import Loader from '../UI/Loader';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
 import { selectUser } from '../../store/servisces';
+import { loginUser } from '../../store/user/actionCreators';
 
 const Login = () => {
 	const [email, setEmail] = useState('');
@@ -16,6 +17,7 @@ const Login = () => {
 	const { isLoading, userError } = useTypedSelector(selectUser);
 	const { fetchUser } = useActions();
 	const navigate = useNavigate();
+	const { token } = useTypedSelector(selectUser);
 
 	const handleLogin = useCallback(
 		async (event: React.FormEvent<HTMLFormElement>) => {
@@ -24,19 +26,21 @@ const Login = () => {
 			const User: ILoginForm = { email, password };
 
 			await fetchUser(User);
-			if (!userError && !isLoading) {
-				navigate(ROUTES.COURSES);
+			await loginUser(token);
+			if (userError || isLoading) {
+				return;
 			}
+			navigate(ROUTES.ROOT);
 		},
-		[email, fetchUser, isLoading, navigate, password, userError]
+		[email, fetchUser, isLoading, navigate, password, token, userError]
 	);
 
 	return (
 		<div className={styles.container}>
+			{userError && <p>{userError}</p>}
+			{isLoading && <Loader />}
 			<form className={styles.form} onSubmit={handleLogin}>
 				<h1>Login</h1>
-				{userError && <p>{userError}</p>}
-				{isLoading && <Loader />}
 				<Input
 					id='email'
 					name='email'

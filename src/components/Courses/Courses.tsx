@@ -10,7 +10,13 @@ import { ROUTES } from '../../router/routes';
 import Loader from '../UI/Loader';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
-import { selectAuthors, selectCourses } from '../../store/servisces';
+import {
+	selectAuthors,
+	selectCourses,
+	selectUser,
+} from '../../store/servisces';
+import { UserRoles } from '../../types/types';
+import { BUTTON_CREATE_COURSE_TEXT } from '../../constants';
 
 const Courses: React.FC = () => {
 	const [searchQuery, setSearchQuery] = useState('');
@@ -20,13 +26,15 @@ const Courses: React.FC = () => {
 		useTypedSelector(selectCourses);
 	const { authors, isAuthorsLoading, authorsError } =
 		useTypedSelector(selectAuthors);
+	const { role, token } = useTypedSelector(selectUser);
 
-	const { fetchAuthors, fetchCourses } = useActions();
+	const { fetchAuthors, fetchCourses, loginUser } = useActions();
 
 	useEffect(() => {
 		fetchAuthors();
 		fetchCourses();
-	}, [fetchAuthors, fetchCourses]);
+		loginUser(token);
+	}, [fetchAuthors, fetchCourses, loginUser, token]);
 
 	const searchedCourses = useMemo(() => {
 		if (searchQuery) {
@@ -55,7 +63,11 @@ const Courses: React.FC = () => {
 					inputName={'course-search'}
 					onSearch={handleSearch}
 				/>
-				<Button children='Add new course' onClick={handleCreateCourse} />
+				{role === UserRoles.ADMIN ? (
+					<Button onClick={handleCreateCourse}>
+						{BUTTON_CREATE_COURSE_TEXT}
+					</Button>
+				) : null}
 			</div>
 			{coursesError && <p>{coursesError}</p>}
 			{authorsError && <p>{authorsError}</p>}
@@ -63,7 +75,11 @@ const Courses: React.FC = () => {
 				<Loader />
 			) : (
 				searchedCourses.map((course) => (
-					<CourseCard key={course.id} course={course} authors={authors} />
+					<CourseCard
+						key={course.id}
+						course={course}
+						authors={Object.values(authors)}
+					/>
 				))
 			)}
 		</div>
