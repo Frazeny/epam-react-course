@@ -47,10 +47,17 @@ const User = {
 };
 
 const HEADER_BUTTON_TEXT = 'Logout';
+const BUTTON_CREATE_COURSE_TEXT = 'Add new course';
 
 export const LOCAL_STORAGE = {
 	USER: 'user',
 	TOKEN: 'token',
 };
 
-export { User, HEADER_BUTTON_TEXT, mockedAuthorsList, mockedCoursesList };
+export {
+	User,
+	HEADER_BUTTON_TEXT,
+	BUTTON_CREATE_COURSE_TEXT,
+	mockedAuthorsList,
+	mockedCoursesList,
+};

@@ -16,6 +16,7 @@ import {
 	selectUser,
 } from '../../store/servisces';
 import { UserRoles } from '../../types/types';
+import { BUTTON_CREATE_COURSE_TEXT } from '../../constants';
 
 const Courses: React.FC = () => {
 	const [searchQuery, setSearchQuery] = useState('');
@@ -63,7 +64,9 @@ const Courses: React.FC = () => {
 					onSearch={handleSearch}
 				/>
 				{role === UserRoles.ADMIN ? (
-					<Button children='Add new course' onClick={handleCreateCourse} />
+					<Button onClick={handleCreateCourse}>
+						{BUTTON_CREATE_COURSE_TEXT}
+					</Button>
 				) : null}
 			</div>
 			{coursesError && <p>{coursesError}</p>}
