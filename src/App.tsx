@@ -18,7 +18,7 @@ function App() {
 			loginUser(token);
 		}
 	}, [loginUser]);
-	console.log(isAuth, role, token);
+
 	return (
 		<div className='App'>
 			<BrowserRouter>
