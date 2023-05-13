@@ -30,7 +30,7 @@
         "eslint:fix": "eslint --fix --ext .js --ext .jsx --ext .ts --ext .tsx src",
         "test:nowatch": "react-scripts test --watchAll=false",
         "prepare": "husky install",
-        "prepublish": "npm run eslint:fix"
+        "prepublish": "npm run eslint:fix && npm run test:nowatch"
     },
     "eslintConfig": {
         "extends": [
@@ -68,5 +68,8 @@
         "react-test-renderer": "^18.2.0",
         "ts-jest": "^29.1.0",
         "typescript": "^4.9.5"
+    },
+    "jest": {
+        "transformIgnorePatterns": ["node_modules\/(?!axios)"]
     }
 }
