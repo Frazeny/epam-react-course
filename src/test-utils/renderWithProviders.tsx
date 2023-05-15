@@ -2,11 +2,7 @@ import React, { PropsWithChildren } from 'react';
 import type { RenderOptions } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import type { PreloadedState } from '@reduxjs/toolkit';
-import {
-	applyMiddleware,
-	combineReducers,
-	createStore,
-} from '@reduxjs/toolkit';
+import { applyMiddleware, createStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { RootState, rootReducer } from '../store/servisces';
 import thunk from 'redux-thunk';
