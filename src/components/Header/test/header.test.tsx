@@ -1,11 +1,9 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { UserRoles } from '../../../types/types';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import { renderWithRouter } from '../../../test-utils/renderWithRouter';
 import { ROUTES } from '../../../router/routes';
 import Header from '../Header';
-import type { RootState } from '../../../store/servisces';
 import { mockedState } from '../../../test-utils/mocks';
 
 describe('Header', () => {

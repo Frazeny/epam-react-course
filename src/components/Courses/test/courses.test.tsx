@@ -4,7 +4,6 @@ import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import { renderWithRouter } from '../../../test-utils/renderWithRouter';
 import { ROUTES } from '../../../router/routes';
 import type { RootState } from '../../../store/servisces';
-import { mockedCoursesList } from '../../../constants';
 import Courses from '../Courses';
 import { mockedState } from '../../../test-utils/mocks';
 
@@ -17,7 +16,7 @@ describe('Courses', () => {
 			}
 		);
 		const courseCards = await getAllByTestId('course-card');
-		expect(courseCards.length).toBe(mockedCoursesList.length);
+		expect(courseCards.length).toBe(mockedState.courses.courses.length);
 	});
 
 	test('renders empty container if courses array length is 0', async () => {
