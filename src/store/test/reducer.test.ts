@@ -7,6 +7,7 @@ import {
 } from '../courses/actionTypes';
 import { useReducer as coursesReducer } from '../courses/reducer';
 import { ICourse } from '../../types/types';
+import { mockedState } from '../../test-utils/mocks';
 
 interface UnexpectedAction {
 	type: string;
@@ -27,11 +28,7 @@ describe('coursesReducer', () => {
 	let initialState: CoursesState;
 
 	beforeEach(() => {
-		initialState = {
-			courses: mockedCoursesList,
-			isCoursesLoading: false,
-			coursesError: null,
-		};
+		initialState = mockedState.courses;
 	});
 	// TODO: Запитати як передати неіснуючий action
 	it('should return initial state', () => {

@@ -6,32 +6,10 @@ import { renderWithRouter } from '../../../test-utils/renderWithRouter';
 import { ROUTES } from '../../../router/routes';
 import Header from '../Header';
 import type { RootState } from '../../../store/servisces';
+import { mockedState } from '../../../test-utils/mocks';
 
 describe('Header', () => {
-	const mockUserName = 'John Doe';
-	const mockedState: RootState = {
-		user: {
-			isAuth: true,
-			name: mockUserName,
-			email: '',
-			token: '',
-			role: UserRoles.USER,
-			userError: null,
-			isLoading: false,
-		},
-		courses: {
-			courses: [],
-			isCoursesLoading: false,
-			coursesError: null,
-		},
-		authors: {
-			authors: {},
-			isAuthorsLoading: false,
-			authorsError: null,
-		},
-	};
-
-	test('renders logo', () => {
+	it('renders logo', () => {
 		renderWithProviders(renderWithRouter(<Header />, ROUTES.ROOT), {
 			preloadedState: mockedState,
 		});
@@ -39,11 +17,11 @@ describe('Header', () => {
 		expect(logoElement).toBeInTheDocument();
 	});
 
-	test('renders user name when authorized', () => {
+	it('renders user name when authorized', () => {
 		renderWithProviders(renderWithRouter(<Header />, ROUTES.ROOT), {
 			preloadedState: mockedState,
 		});
-		const nameElement = screen.getByText(mockUserName);
+		const nameElement = screen.getByText(mockedState.user.name);
 		expect(nameElement).toBeInTheDocument();
 	});
 });

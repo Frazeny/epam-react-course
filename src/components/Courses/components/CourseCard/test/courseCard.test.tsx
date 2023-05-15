@@ -2,45 +2,20 @@ import { renderWithProviders } from '../../../../../test-utils/renderWithProvide
 import { renderWithRouter } from '../../../../../test-utils/renderWithRouter';
 import CourseCard from '../CourseCard';
 import { ROUTES } from '../../../../../router/routes';
-import { mockedAuthorsList, mockedCoursesList } from '../../../../../constants';
-import { RootState } from '../../../../../store/servisces';
 import { screen } from '@testing-library/react';
-import { UserRoles } from '../../../../../types/types';
 import '@testing-library/jest-dom';
 import { dateConverter } from '../../../../../helpers/dateGeneratop';
 import { formattedDuration } from '../../../../../helpers/pipeDuration';
-
-const mockedCourse = mockedCoursesList[0];
-const mockUserName = 'John Doe';
-const mockedUserState = {
-	isAuth: true,
-	name: mockUserName,
-	email: '',
-	token: '',
-	role: UserRoles.USER,
-	userError: null,
-	isLoading: false,
-};
-const mockedState: RootState = {
-	user: mockedUserState,
-	courses: {
-		courses: [],
-		isCoursesLoading: false,
-		coursesError: null,
-	},
-	authors: {
-		authors: {},
-		isAuthorsLoading: false,
-		authorsError: null,
-	},
-};
+import { mockedState } from '../../../../../test-utils/mocks';
 
 describe('CourseCard', () => {
-	// TODO: напевно винести рендер в beforeAll()?
 	test('renders title', () => {
 		renderWithProviders(
 			renderWithRouter(
-				<CourseCard course={mockedCourse} authors={mockedAuthorsList} />,
+				<CourseCard
+					course={mockedState.courses.courses[0]}
+					authors={Object.values(mockedState.authors.authors)}
+				/>,
 				ROUTES.COURSES
 			),
 			{
@@ -48,14 +23,17 @@ describe('CourseCard', () => {
 			}
 		);
 
-		const title = screen.getByText(mockedCourse.title);
+		const title = screen.getByText(mockedState.courses.courses[0].title);
 		expect(title).toBeInTheDocument();
 	});
 
 	test('renders display description', () => {
 		renderWithProviders(
 			renderWithRouter(
-				<CourseCard course={mockedCourse} authors={mockedAuthorsList} />,
+				<CourseCard
+					course={mockedState.courses.courses[0]}
+					authors={Object.values(mockedState.authors.authors)}
+				/>,
 				ROUTES.COURSES
 			),
 			{
@@ -63,15 +41,22 @@ describe('CourseCard', () => {
 			}
 		);
 
-		const description = screen.getByText(mockedCourse.description);
+		const description = screen.getByText(
+			mockedState.courses.courses[0].description
+		);
 		expect(description).toBeInTheDocument();
 	});
 
 	test('renders duration in the correct format', () => {
-		const correctDurationFormat = formattedDuration(mockedCourse.duration);
+		const correctDurationFormat = formattedDuration(
+			mockedState.courses.courses[0].duration
+		);
 		renderWithProviders(
 			renderWithRouter(
-				<CourseCard course={mockedCourse} authors={mockedAuthorsList} />,
+				<CourseCard
+					course={mockedState.courses.courses[0]}
+					authors={Object.values(mockedState.authors.authors)}
+				/>,
 				ROUTES.COURSES
 			),
 			{
@@ -84,9 +69,9 @@ describe('CourseCard', () => {
 
 	test('renders authors list', () => {
 		// TODO: refactor courseAuthorsString: винести це з компонента CourseCard і тут в хелпери
-		let courseAuthorsString = mockedCourse.authors
+		let courseAuthorsString = mockedState.courses.courses[0].authors
 			.map((authorID) => {
-				const author = mockedAuthorsList.find(
+				const author = Object.values(mockedState.authors.authors).find(
 					(author) => author.id === authorID
 				);
 				return author ? author.name : '';
@@ -100,7 +85,10 @@ describe('CourseCard', () => {
 
 		renderWithProviders(
 			renderWithRouter(
-				<CourseCard course={mockedCourse} authors={mockedAuthorsList} />,
+				<CourseCard
+					course={mockedState.courses.courses[0]}
+					authors={Object.values(mockedState.authors.authors)}
+				/>,
 				ROUTES.COURSES
 			),
 			{
@@ -113,11 +101,14 @@ describe('CourseCard', () => {
 
 	test('renders created date in the correct format', () => {
 		const correctCreatedDateFormat = dateConverter(
-			new Date(mockedCourse.creationDate)
+			new Date(mockedState.courses.courses[0].creationDate)
 		);
 		renderWithProviders(
 			renderWithRouter(
-				<CourseCard course={mockedCourse} authors={mockedAuthorsList} />,
+				<CourseCard
+					course={mockedState.courses.courses[0]}
+					authors={Object.values(mockedState.authors.authors)}
+				/>,
 				ROUTES.COURSES
 			),
 			{
