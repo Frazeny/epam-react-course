@@ -28,13 +28,13 @@ const Courses: React.FC = () => {
 		useTypedSelector(selectAuthors);
 	const { role, token } = useTypedSelector(selectUser);
 
-	// const { fetchAuthors, fetchCourses, loginUser } = useActions();
-	//
-	// useEffect(() => {
-	// 	fetchAuthors();
-	// 	fetchCourses();
-	// 	loginUser(token);
-	// }, [fetchAuthors, fetchCourses, loginUser, token]);
+	const { fetchAuthors, fetchCourses, loginUser } = useActions();
+
+	useEffect(() => {
+		fetchAuthors();
+		fetchCourses();
+		loginUser(token);
+	}, [fetchAuthors, fetchCourses, loginUser, token]);
 
 	const searchedCourses = useMemo(() => {
 		if (searchQuery) {
