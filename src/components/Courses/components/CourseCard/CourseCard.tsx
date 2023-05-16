@@ -52,7 +52,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, authors }) => {
 	}, [course, deleteCourse, token]);
 
 	return (
-		<div className={styles.courseCard}>
+		<div className={styles.courseCard} data-testid={'course-card'}>
 			<div className={styles.courseCard__info}>
 				<h2>{course.title}</h2>
 				<p>{course.description}</p>

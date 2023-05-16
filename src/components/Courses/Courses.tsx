@@ -76,6 +76,7 @@ const Courses: React.FC = () => {
 			) : (
 				searchedCourses.map((course) => (
 					<CourseCard
+						data-testid={'course-card'}
 						key={course.id}
 						course={course}
 						authors={Object.values(authors)}

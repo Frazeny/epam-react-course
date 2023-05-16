@@ -2,6 +2,7 @@ import {
 	applyMiddleware,
 	combineReducers,
 	createStore,
+	Store,
 } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 import * as CourseReducer from './courses/reducer';
@@ -27,6 +28,7 @@ export type RootState = ReturnType<typeof rootReducer>;
 // });
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));
+export type StoreState = typeof store;
 
 export const ActionCreators = {
 	...CoursesActionCreators,

@@ -10,7 +10,7 @@ export const fetchAuthors = () => {
 			const response = await CoursesService.getAllAuthors();
 			dispatch({
 				type: AuthorsActionTypes.FETCH_AUTHORS_SUCCESS,
-				payload: response.data.result,
+				payload: response,
 			});
 		} catch (error) {
 			if (error instanceof Error) {

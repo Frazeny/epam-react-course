@@ -8,7 +8,7 @@ import {
 	IUser,
 } from '../types/types';
 
-interface GetResponseProps<T> {
+export interface GetResponseProps<T> {
 	successful: boolean;
 	result: T;
 }
@@ -39,7 +39,7 @@ export default class CoursesService {
 		const response = await axios.get<GetResponseProps<IAuthor[]>>(
 			`${SERVER_URL}/authors/all`
 		);
-		return response;
+		return response.data.result;
 	}
 
 	static async postRegisterNewUser(user: IUser) {
